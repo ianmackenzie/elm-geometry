@@ -6,9 +6,7 @@ module Tests.RationalQuadraticSpline3d exposing
     )
 
 import Expect exposing (Expectation, FloatingPointTolerance(..))
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Interval
 import Length exposing (Meters)
@@ -16,8 +14,8 @@ import Point3d
 import Quantity
 import Random
 import RationalQuadraticSpline3d exposing (RationalQuadraticSpline3d)
-import Shrink
 import Test exposing (Test)
+import Test.Check as Test
 import Tests.Generic.Curve3d
 import Vector3d
 
@@ -121,11 +119,10 @@ bSplines =
 splitAt : Test
 splitAt =
     Test.describe "splitAt"
-        [ Test.fuzz3
-            Fuzz.rationalQuadraticSpline3d
-            Fuzz.parameterValue
-            Fuzz.parameterValue
-            "first"
+        [ Test.check3 "first"
+            Random.rationalQuadraticSpline3d
+            Random.parameterValue
+            Random.parameterValue
             (\spline t0 t1 ->
                 let
                     ( first, _ ) =
@@ -135,11 +132,10 @@ splitAt =
                     |> Expect.point3d
                         (RationalQuadraticSpline3d.pointOn spline (t1 * t0))
             )
-        , Test.fuzz3
-            Fuzz.rationalQuadraticSpline3d
-            Fuzz.parameterValue
-            Fuzz.parameterValue
-            "second"
+        , Test.check3 "second"
+            Random.rationalQuadraticSpline3d
+            Random.parameterValue
+            Random.parameterValue
             (\spline t0 t1 ->
                 let
                     ( _, second ) =

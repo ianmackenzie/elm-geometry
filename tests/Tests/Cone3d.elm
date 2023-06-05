@@ -6,14 +6,15 @@ import Circle3d exposing (Circle3d)
 import Cone3d exposing (Cone3d)
 import Expect
 import Frame3d exposing (Frame3d)
-import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity)
+import Random exposing (Generator)
 import Test exposing (Test)
+import Test.Check as Test
 import Vector3d exposing (Vector3d)
 
 
@@ -21,6 +22,7 @@ type alias Transformation coordinates =
     { cone : Cone3d Meters coordinates -> Cone3d Meters coordinates
     , point : Point3d Meters coordinates -> Point3d Meters coordinates
     , circle : Circle3d Meters coordinates -> Circle3d Meters coordinates
+    , isZeroScale : Bool
     }
 
 
@@ -29,6 +31,7 @@ rotation axis angle =
     { cone = Cone3d.rotateAround axis angle
     , point = Point3d.rotateAround axis angle
     , circle = Circle3d.rotateAround axis angle
+    , isZeroScale = False
     }
 
 
@@ -37,6 +40,7 @@ translation displacement =
     { cone = Cone3d.translateBy displacement
     , point = Point3d.translateBy displacement
     , circle = Circle3d.translateBy displacement
+    , isZeroScale = False
     }
 
 
@@ -45,6 +49,7 @@ scaling centerPoint scale =
     { cone = Cone3d.scaleAbout centerPoint scale
     , point = Point3d.scaleAbout centerPoint scale
     , circle = Circle3d.scaleAbout centerPoint scale
+    , isZeroScale = scale == 0.0
     }
 
 
@@ -53,22 +58,23 @@ mirroring plane =
     { cone = Cone3d.mirrorAcross plane
     , point = Point3d.mirrorAcross plane
     , circle = Circle3d.mirrorAcross plane
+    , isZeroScale = False
     }
 
 
-transformationFuzzer : Fuzzer (Transformation coordinates)
-transformationFuzzer =
-    Fuzz.oneOf
-        [ Fuzz.map2 rotation Fuzz.axis3d Fuzz.angle
-        , Fuzz.map translation Fuzz.vector3d
-        , Fuzz.map2 scaling Fuzz.point3d Fuzz.scale
-        , Fuzz.map mirroring Fuzz.plane3d
+transformationGenerator : Generator (Transformation coordinates)
+transformationGenerator =
+    Random.oneOf
+        (Random.map2 rotation Random.axis3d Random.angle)
+        [ Random.map translation Random.vector3d
+        , Random.map2 scaling Random.point3d Random.scale
+        , Random.map mirroring Random.plane3d
         ]
 
 
-coneAndPoint : Fuzzer ( Cone3d Meters coordinates, Point3d Meters coordinates )
+coneAndPoint : Generator ( Cone3d Meters coordinates, Point3d Meters coordinates )
 coneAndPoint =
-    Fuzz.map4
+    Random.map4
         (\cone u v theta ->
             let
                 halfLength =
@@ -100,19 +106,18 @@ coneAndPoint =
             in
             ( cone, Point3d.xyzIn coneFrame x y z )
         )
-        Fuzz.cone3d
-        Fuzz.parameterValue
-        Fuzz.parameterValue
-        Fuzz.angle
+        Random.cone3d
+        Random.parameterValue
+        Random.parameterValue
+        Random.angle
 
 
 suite : Test
 suite =
     Test.describe "Cone3d"
-        [ Test.fuzz2
+        [ Test.check2 "Point containment is consistent"
             coneAndPoint
-            transformationFuzzer
-            "Point containment is consistent"
+            transformationGenerator
             (\( cone, point ) transformation ->
                 let
                     initialContainment =
@@ -121,18 +126,21 @@ suite =
                     transformedPoint =
                         transformation.point point
 
-                    transformedcone =
+                    transformedCone =
                         transformation.cone cone
 
                     finalContainment =
-                        Cone3d.contains transformedPoint transformedcone
+                        Cone3d.contains transformedPoint transformedCone
                 in
-                finalContainment |> Expect.equal initialContainment
+                if transformation.isZeroScale then
+                    finalContainment |> Expect.equal True
+
+                else
+                    finalContainment |> Expect.equal initialContainment
             )
-        , Test.fuzz2
-            transformationFuzzer
-            Fuzz.cone3d
-            "Base is consistent through transformation"
+        , Test.check2 "Base is consistent through transformation"
+            transformationGenerator
+            Random.cone3d
             (\transformation cone ->
                 let
                     base =

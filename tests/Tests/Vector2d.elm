@@ -13,18 +13,19 @@ module Tests.Vector2d exposing
 import Axis2d
 import Direction2d
 import Expect
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Quantity
+import Random
 import Test exposing (Test)
+import Test.Check as Test
 import Vector2d
 
 
 perpendicularVectorIsPerpendicular : Test
 perpendicularVectorIsPerpendicular =
-    Test.fuzz Fuzz.vector2d
-        "perpendicularTo actually returns a perpendicular vector"
+    Test.check1 "perpendicularTo actually returns a perpendicular vector"
+        Random.vector2d
         (\vector ->
             vector
                 |> Vector2d.perpendicularTo
@@ -35,8 +36,8 @@ perpendicularVectorIsPerpendicular =
 
 dotProductWithSelfIsSquaredLength : Test
 dotProductWithSelfIsSquaredLength =
-    Test.fuzz Fuzz.vector2d
-        "Dot product of a vector with itself is its squared length"
+    Test.check1 "Dot product of a vector with itself is its squared length"
+        Random.vector2d
         (\vector ->
             (vector |> Vector2d.dot vector)
                 |> Expect.quantity
@@ -46,9 +47,9 @@ dotProductWithSelfIsSquaredLength =
 
 rotateByPreservesLength : Test
 rotateByPreservesLength =
-    Test.fuzz2 Fuzz.vector2d
-        Fuzz.angle
-        "Rotating a vector preserves its length"
+    Test.check2 "Rotating a vector preserves its length"
+        Random.vector2d
+        Random.angle
         (\vector angle ->
             Vector2d.rotateBy angle vector
                 |> Vector2d.length
@@ -58,30 +59,38 @@ rotateByPreservesLength =
 
 rotateByRotatesByTheCorrectAngle : Test
 rotateByRotatesByTheCorrectAngle =
-    Test.fuzz2 Fuzz.vector2d
-        Fuzz.angle
-        "Rotating a vector rotates by the correct angle"
+    Test.check2 "Rotating a vector rotates by the correct angle"
+        Random.vector2d
+        Random.angle
         (\vector angle ->
             let
-                direction =
-                    Vector2d.direction vector
-
-                rotatedDirection =
-                    Vector2d.direction (Vector2d.rotateBy angle vector)
-
-                measuredAngle =
-                    Maybe.map2 Direction2d.angleFrom direction rotatedDirection
-                        |> Maybe.withDefault Quantity.zero
+                rotatedVector =
+                    Vector2d.rotateBy angle vector
             in
-            Expect.angle angle measuredAngle
+            if vector == Vector2d.zero then
+                rotatedVector |> Expect.vector2d vector
+
+            else
+                let
+                    direction =
+                        Vector2d.direction vector
+
+                    rotatedDirection =
+                        Vector2d.direction (Vector2d.rotateBy angle vector)
+
+                    measuredAngle =
+                        Maybe.map2 Direction2d.angleFrom direction rotatedDirection
+                            |> Maybe.withDefault Quantity.zero
+                in
+                Expect.angle angle measuredAngle
         )
 
 
 mirrorAcrossPreservesParallelComponent : Test
 mirrorAcrossPreservesParallelComponent =
-    Test.fuzz2 Fuzz.vector2d
-        Fuzz.axis2d
-        "Mirroring a vector across an axis preserves component parallel to the axis"
+    Test.check2 "Mirroring a vector across an axis preserves component parallel to the axis"
+        Random.vector2d
+        Random.axis2d
         (\vector axis ->
             let
                 parallelComponent =
@@ -96,9 +105,9 @@ mirrorAcrossPreservesParallelComponent =
 
 mirrorAcrossNegatesPerpendicularComponent : Test
 mirrorAcrossNegatesPerpendicularComponent =
-    Test.fuzz2 Fuzz.vector2d
-        Fuzz.axis2d
-        "Mirroring a vector across an axis negates component perpendicular to the axis"
+    Test.check2 "Mirroring a vector across an axis negates component perpendicular to the axis"
+        Random.vector2d
+        Random.axis2d
         (\vector axis ->
             let
                 perpendicularDirection =
@@ -117,7 +126,7 @@ mirrorAcrossNegatesPerpendicularComponent =
 
 components : Test
 components =
-    Test.fuzz Fuzz.vector2d "components and xComponent/yComponent are consistent" <|
+    Test.check1 "components and xComponent/yComponent are consistent" Random.vector2d <|
         \vector ->
             Expect.all
                 [ Tuple.first >> Expect.quantity (Vector2d.xComponent vector)
@@ -128,7 +137,7 @@ components =
 
 sum : Test
 sum =
-    Test.fuzz (Fuzz.list Fuzz.vector2d) "sum is consistent with plus" <|
+    Test.check1 "sum is consistent with plus" (Random.smallList Random.vector2d) <|
         \vectors ->
             Vector2d.sum vectors
                 |> Expect.vector2d
@@ -138,10 +147,10 @@ sum =
 vectorScaling : Test
 vectorScaling =
     Test.describe "scaling vectors"
-        [ Test.fuzz Fuzz.length "scaling a zero vector results in a zero vector" <|
+        [ Test.check1 "scaling a zero vector results in a zero vector" Random.length <|
             \len ->
                 Expect.equal Vector2d.zero (Vector2d.scaleTo len Vector2d.zero)
-        , Test.fuzz (Fuzz.tuple ( Fuzz.length, Fuzz.vector2d )) "scaleTo has a consistent length" <|
+        , Test.check1 "scaleTo has a consistent length" (Random.pair Random.length Random.vector2d) <|
             \( scale, vector ) ->
                 if vector == Vector2d.zero then
                     Vector2d.scaleTo scale vector
@@ -151,7 +160,7 @@ vectorScaling =
                     Vector2d.scaleTo scale vector
                         |> Vector2d.length
                         |> Expect.quantity (Quantity.abs scale)
-        , Test.fuzz Fuzz.vector2d "normalize has a consistent length" <|
+        , Test.check1 "normalize has a consistent length" Random.vector2d <|
             \vector ->
                 if vector == Vector2d.zero then
                     Vector2d.normalize vector

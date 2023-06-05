@@ -1,8 +1,6 @@
 module Tests.DelaunayTriangulation2d exposing
     ( allDelaunayTrianglesHaveNonzeroArea
-    ,  delaunayTriangleContainsOnlyItsVertices
-       --, emptyDelaunayMeansCollinearInput
-
+    , delaunayTriangleContainsOnlyItsVertices
     , failsOnCoincidentVertices
     )
 
@@ -11,26 +9,27 @@ import Circle2d
 import DelaunayTriangulation2d
 import Direction3d
 import Expect
-import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters, inMeters, meters)
 import List.Extra
 import Plane3d
 import Point2d exposing (Point2d)
 import Point3d
 import Quantity
+import Random exposing (Generator)
 import SketchPlane3d
 import Test exposing (Test)
+import Test.Check as Test
 import Triangle2d
 import Vector3d
 
 
-uniquePoints : Fuzzer (Array (Point2d Meters coordinates))
+uniquePoints : Generator (Array (Point2d Meters coordinates))
 uniquePoints =
-    Fuzz.list Fuzz.point2d
-        |> Fuzz.map (List.Extra.uniqueBy (Point2d.toTuple inMeters))
-        |> Fuzz.map Array.fromList
+    Random.smallList Random.point2d
+        |> Random.map (List.Extra.uniqueBy (Point2d.toTuple inMeters))
+        |> Random.map Array.fromList
 
 
 allDelaunayTrianglesHaveNonzeroArea : Test
@@ -60,7 +59,7 @@ allDelaunayTrianglesHaveNonzeroArea =
                         x :: xs ->
                             Expect.fail ("DelaunayTriangulation2d produced a triangle with negative or zero area: " ++ Debug.toString x)
     in
-    Test.fuzz uniquePoints description expectation
+    Test.check1 description uniquePoints expectation
 
 
 delaunayTriangleContainsOnlyItsVertices : Test
@@ -116,19 +115,7 @@ delaunayTriangleContainsOnlyItsVertices =
                 Ok triangulation ->
                     checkAll (DelaunayTriangulation2d.triangles triangulation)
     in
-    Test.fuzz uniquePoints description expectation
-
-
-
---emptyDelaunayMeansCollinearInput : Test
---emptyDelaunayMeansCollinearInput =
---    let
---        description =
---            "If a Delaunay triangulation is empty, then all input points must be collinear"
---        expectation points =
---            Expect.fail "TODO"
---    in
---    Test.fuzz uniquePoints description expectation
+    Test.check1 description uniquePoints expectation
 
 
 failsOnCoincidentVertices : Test
@@ -150,5 +137,4 @@ failsOnCoincidentVertices =
                     DelaunayTriangulation2d.fromPoints pointsWithDuplicate
                         |> Expect.err
     in
-    -- use normal `Fuzz.list`, more duplicates don't matter here
-    Test.fuzz (Fuzz.list Fuzz.point2d) description expectation
+    Test.check1 description (Random.smallList Random.point2d) expectation

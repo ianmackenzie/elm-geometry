@@ -13,15 +13,15 @@ import Angle
 import ArcLengthParameterization
 import Expect
 import Float.Extra as Float
-import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Length exposing (Length, Meters, inMeters, meters)
 import Point2d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Quantity exposing (Quantity, zero)
+import Random exposing (Generator)
 import Test exposing (Test)
+import Test.Check as Test
 import Tests.Generic.Curve2d
 import Tests.Literals exposing (ok)
 
@@ -41,16 +41,16 @@ curveOperations =
     }
 
 
-degenerateSpline : Fuzzer (QuadraticSpline2d Meters coordinates)
+degenerateSpline : Generator (QuadraticSpline2d Meters coordinates)
 degenerateSpline =
-    Fuzz.point2d
-        |> Fuzz.map
+    Random.point2d
+        |> Random.map
             (\point -> QuadraticSpline2d.fromControlPoints point point point)
 
 
-curvedSpline : Fuzzer (QuadraticSpline2d Meters coordinates)
+curvedSpline : Generator (QuadraticSpline2d Meters coordinates)
 curvedSpline =
-    Fuzz.map5
+    Random.map5
         (\angle length interpolationParameter offset flipSide ->
             let
                 x0 =
@@ -81,11 +81,11 @@ curvedSpline =
             QuadraticSpline2d.fromControlPoints p0 p1 p2
                 |> QuadraticSpline2d.rotateAround Point2d.origin angle
         )
-        (Fuzz.map Angle.radians (Fuzz.floatRange 0 (2 * pi)))
-        (Fuzz.map meters (Fuzz.floatRange 1 10))
-        (Fuzz.floatRange 0 1)
-        (Fuzz.map meters (Fuzz.floatRange 1 5))
-        Fuzz.bool
+        (Random.map Angle.radians (Random.float 0 (2 * pi)))
+        (Random.map meters (Random.float 1 10))
+        Random.parameterValue
+        (Random.map meters (Random.float 1 5))
+        (Random.uniform True [ False ])
 
 
 analyticalLength : QuadraticSpline2d Meters coordinates -> Length
@@ -181,7 +181,7 @@ parameterization =
             \_ ->
                 QuadraticSpline2d.pointAlong parameterizedExample zero
                     |> Expect.point2d (Point2d.meters 1 1)
-        , Test.fuzz Fuzz.quadraticSpline2d "at s = 0 the arcLengthParameterized curve gives the starting point" <|
+        , Test.check1 "at s = 0 the arcLengthParameterized curve gives the starting point" Random.quadraticSpline2d <|
             \spline ->
                 case QuadraticSpline2d.nondegenerate spline of
                     Ok nondegenerateSpline ->
@@ -199,7 +199,7 @@ parameterization =
 
                     Err _ ->
                         Expect.pass
-        , Test.fuzz Fuzz.quadraticSpline2d "at s = (length spline) the arcLengthParameterized curve gives the end point" <|
+        , Test.check1 "at s = (length spline) the arcLengthParameterized curve gives the end point" Random.quadraticSpline2d <|
             \spline ->
                 case QuadraticSpline2d.nondegenerate spline of
                     Ok nondegenerateSpline ->
@@ -218,7 +218,7 @@ parameterization =
 
                     Err _ ->
                         Expect.pass
-        , Test.fuzz Fuzz.quadraticSpline2d "at s = (length spline) toParameterValue gives 1" <|
+        , Test.check1 "at s = (length spline) toParameterValue gives 1" Random.quadraticSpline2d <|
             \spline ->
                 case QuadraticSpline2d.nondegenerate spline of
                     Ok nondegenerateSpline ->
@@ -244,7 +244,7 @@ parameterization =
 
                     Err _ ->
                         Expect.pass
-        , Test.fuzz curvedSpline "arc length matches analytical formula" <|
+        , Test.check1 "arc length matches analytical formula" curvedSpline <|
             -- analyticalLength falls down for degenerate splines so just check
             -- curved ones
             \spline ->
@@ -297,8 +297,8 @@ parameterization =
 
 bSplineReproducesSpline : Test
 bSplineReproducesSpline =
-    Test.fuzz Fuzz.quadraticSpline2d
-        "Can reconstruct a quadratic spline with a B-spline with repeated knots"
+    Test.check1 "Can reconstruct a quadratic spline with a B-spline with repeated knots"
+        Random.quadraticSpline2d
         (\spline ->
             let
                 p1 =

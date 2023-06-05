@@ -11,41 +11,40 @@ module Tests.Arc3d exposing
 import Angle
 import Arc3d exposing (Arc3d)
 import EllipticalArc2d
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Length exposing (Meters)
 import Point3d
 import Test exposing (Test)
+import Test.Check as Test
 import Tests.Generic.Curve3d
 
 
 evaluateZeroIsStartPoint : Test
 evaluateZeroIsStartPoint =
-    Test.fuzz Fuzz.arc3d
-        "Evaluating at t=0 returns start point"
+    Test.check1 "Evaluating at t=0 returns start point"
+        Random.arc3d
         (\arc -> Arc3d.pointOn arc 0 |> Expect.point3d (Arc3d.startPoint arc))
 
 
 evaluateOneIsEndPoint : Test
 evaluateOneIsEndPoint =
-    Test.fuzz Fuzz.arc3d
-        "Evaluating at t=1 returns end point"
+    Test.check1 "Evaluating at t=1 returns end point"
+        Random.arc3d
         (\arc -> Arc3d.pointOn arc 1 |> Expect.point3d (Arc3d.endPoint arc))
 
 
 evaluateHalfIsMidpoint : Test
 evaluateHalfIsMidpoint =
-    Test.fuzz Fuzz.arc3d
-        "Evaluating at t=0.5 returns midpoint"
+    Test.check1 "Evaluating at t=0.5 returns midpoint"
+        Random.arc3d
         (\arc -> Arc3d.pointOn arc 0.5 |> Expect.point3d (Arc3d.midpoint arc))
 
 
 reverseKeepsMidpoint : Test
 reverseKeepsMidpoint =
-    Test.fuzz Fuzz.arc3d
-        "Reversing an arc keeps the midpoint"
+    Test.check1 "Reversing an arc keeps the midpoint"
+        Random.arc3d
         (\arc ->
             Arc3d.midpoint (Arc3d.reverse arc)
                 |> Expect.point3d (Arc3d.midpoint arc)
@@ -54,9 +53,9 @@ reverseKeepsMidpoint =
 
 reverseFlipsDirection : Test
 reverseFlipsDirection =
-    Test.fuzz2 Fuzz.arc3d
-        Fuzz.parameterValue
-        "Reversing an arc is consistent with reversed evaluation"
+    Test.check2 "Reversing an arc is consistent with reversed evaluation"
+        Random.arc3d
+        Random.parameterValue
         (\arc parameterValue ->
             Arc3d.pointOn (Arc3d.reverse arc) parameterValue
                 |> Expect.point3d
@@ -66,11 +65,10 @@ reverseFlipsDirection =
 
 projectInto : Test
 projectInto =
-    Test.fuzz3
-        Fuzz.arc3d
-        Fuzz.sketchPlane3d
-        Fuzz.parameterValue
-        "Projecting an arc works properly"
+    Test.check3 "Projecting an arc works properly"
+        Random.arc3d
+        Random.sketchPlane3d
+        Random.parameterValue
         (\arc sketchPlane parameterValue ->
             let
                 projectedArc =

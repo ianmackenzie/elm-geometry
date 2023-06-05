@@ -224,7 +224,7 @@ firstDerivative operations =
 
 approximate : Operations curve GlobalCoordinates -> Test
 approximate operations =
-    Test.check "approximate has desired accuracy"
+    Test.check1 "approximate has desired accuracy"
         operations.generator
         (\curve ->
             let

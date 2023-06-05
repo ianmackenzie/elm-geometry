@@ -11,13 +11,14 @@ module Tests.Polyline2d exposing
 
 import BoundingBox2d
 import Expect
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (meters)
 import Point2d
 import Polyline2d
+import Random
 import Test exposing (Test)
+import Test.Check as Test
 
 
 emptyPolylineHasNothingCentroid : Test
@@ -34,8 +35,10 @@ emptyPolylineHasNothingCentroid =
 
 zeroLengthPolylineHasItselfAsCentroid : Test
 zeroLengthPolylineHasItselfAsCentroid =
-    Test.fuzz2 Fuzz.point2d (Fuzz.intRange 1 20) "Centroid of zero length polyline is the same point" <|
-        \point reps ->
+    Test.check2 "Centroid of zero length polyline is the same point"
+        Random.point2d
+        (Random.int 1 20)
+        (\point reps ->
             let
                 singlePointLine =
                     List.repeat reps point
@@ -43,12 +46,15 @@ zeroLengthPolylineHasItselfAsCentroid =
             in
             Polyline2d.centroid singlePointLine
                 |> Expect.equal (Just point)
+        )
 
 
 centroidOfSingleSegmentIsSameAsMidpoint : Test
 centroidOfSingleSegmentIsSameAsMidpoint =
-    Test.fuzz2 Fuzz.point2d Fuzz.point2d "Centroid of single line segment is middle of endpoints" <|
-        \p1 p2 ->
+    Test.check2 "Centroid of single line segment is middle of endpoints"
+        Random.point2d
+        Random.point2d
+        (\p1 p2 ->
             let
                 monoline =
                     Polyline2d.fromVertices [ p1, p2 ]
@@ -58,11 +64,12 @@ centroidOfSingleSegmentIsSameAsMidpoint =
             in
             Polyline2d.centroid monoline
                 |> Expect.just (Expect.point2d expectedCentroid)
+        )
 
 
 centroidOfRightAngle : Test
 centroidOfRightAngle =
-    Test.fuzz Fuzz.float "Centroid of a right angle is between the two sides" <|
+    Test.check1 "Centroid of a right angle is between the two sides" (Random.float -10 10) <|
         \armLength ->
             let
                 angle =
@@ -81,7 +88,7 @@ centroidOfRightAngle =
 
 centroidOfStepShape : Test
 centroidOfStepShape =
-    Test.fuzz Fuzz.float "Centroid of a step shape is halfway up the step" <|
+    Test.check1 "Centroid of a step shape is halfway up the step" (Random.float -10 10) <|
         \armLength ->
             let
                 angle =
@@ -101,7 +108,7 @@ centroidOfStepShape =
 
 centroidOfOpenSquare : Test
 centroidOfOpenSquare =
-    Test.fuzz Fuzz.float "Centroid of an open square is skewed to closed side" <|
+    Test.check1 "Centroid of an open square is skewed to closed side" (Random.float -10 10) <|
         \sideLength ->
             let
                 squareline =
@@ -121,7 +128,7 @@ centroidOfOpenSquare =
 
 centroidOfClosedSquare : Test
 centroidOfClosedSquare =
-    Test.fuzz Fuzz.float "Centroid of a closed square is mid-point" <|
+    Test.check1 "Centroid of a closed square is mid-point" (Random.float -10 10) <|
         \sideLength ->
             let
                 squareline =
@@ -142,12 +149,11 @@ centroidOfClosedSquare =
 
 centroidIsWithinBoundingBox : Test
 centroidIsWithinBoundingBox =
-    Test.fuzz3 Fuzz.point2d
-        Fuzz.point2d
-        (Fuzz.list Fuzz.point2d)
-        "The centroid of a polyline is within the polyline's bounding box"
-    <|
-        \first second rest ->
+    Test.check3 "The centroid of a polyline is within the polyline's bounding box"
+        Random.point2d
+        Random.point2d
+        (Random.smallList Random.point2d)
+        (\first second rest ->
             let
                 points =
                     first :: second :: rest
@@ -170,3 +176,4 @@ centroidIsWithinBoundingBox =
 
                 ( _, Nothing ) ->
                     Expect.fail "Error determining centroid."
+        )

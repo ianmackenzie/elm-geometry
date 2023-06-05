@@ -21,21 +21,22 @@ import Axis2d
 import Direction2d
 import Expect
 import Frame2d
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (meters)
 import Point2d
 import Quantity
+import Random
 import Test exposing (Test)
+import Test.Check as Test
 import Vector2d
 
 
 angleFromAndEqualWithinAreConsistent : Test
 angleFromAndEqualWithinAreConsistent =
-    Test.fuzz2 Fuzz.direction2d
-        Fuzz.direction2d
-        "angleFrom and equalWithin are consistent"
+    Test.check2 "angleFrom and equalWithin are consistent"
+        Random.direction2d
+        Random.direction2d
         (\firstDirection secondDirection ->
             let
                 angle =
@@ -45,19 +46,19 @@ angleFromAndEqualWithinAreConsistent =
                 tolerance =
                     angle |> Quantity.plus (Angle.radians 1.0e-12)
             in
-            Expect.true "Two directions should be equal to within the angle between them"
-                (Direction2d.equalWithin tolerance
-                    firstDirection
-                    secondDirection
-                )
+            if Direction2d.equalWithin tolerance firstDirection secondDirection then
+                Expect.pass
+
+            else
+                Expect.fail "Two directions should be equal to within the angle between them"
         )
 
 
 angleFromAndRotateByAreConsistent : Test
 angleFromAndRotateByAreConsistent =
-    Test.fuzz2 Fuzz.direction2d
-        Fuzz.direction2d
-        "angleFrom and rotateBy are consistent"
+    Test.check2 "angleFrom and rotateBy are consistent"
+        Random.direction2d
+        Random.direction2d
         (\firstDirection secondDirection ->
             let
                 angle =
@@ -71,8 +72,8 @@ angleFromAndRotateByAreConsistent =
 
 orthonormalizeProducesValidFrameBasis : Test
 orthonormalizeProducesValidFrameBasis =
-    Test.fuzz (Fuzz.tuple ( Fuzz.vector2d, Fuzz.vector2d ))
-        "orthonormalize produces a valid frame basis"
+    Test.check1 "orthonormalize produces a valid frame basis"
+        (Random.pair Random.vector2d Random.vector2d)
         (\( xVector, yVector ) ->
             case Direction2d.orthonormalize xVector yVector of
                 Just ( xDirection, yDirection ) ->
@@ -110,8 +111,8 @@ orthonormalizingParallelVectorsReturnsNothing =
 
 perpendicularToIsConsistentWithRotateBy : Test
 perpendicularToIsConsistentWithRotateBy =
-    Test.fuzz Fuzz.direction2d
-        "perpendicularTo is consistent with rotateBy"
+    Test.check1 "perpendicularTo is consistent with rotateBy"
+        Random.direction2d
         (\direction ->
             Direction2d.perpendicularTo direction
                 |> Expect.direction2d
@@ -121,8 +122,8 @@ perpendicularToIsConsistentWithRotateBy =
 
 rotateClockwiseIsConsistentWithRotateBy : Test
 rotateClockwiseIsConsistentWithRotateBy =
-    Test.fuzz Fuzz.direction2d
-        "rotateClockwise is consistent with rotateBy"
+    Test.check1 "rotateClockwise is consistent with rotateBy"
+        Random.direction2d
         (\direction ->
             Direction2d.rotateClockwise direction
                 |> Expect.direction2d
@@ -132,8 +133,8 @@ rotateClockwiseIsConsistentWithRotateBy =
 
 rotateCounterclockwiseIsConsistentWithRotateBy : Test
 rotateCounterclockwiseIsConsistentWithRotateBy =
-    Test.fuzz Fuzz.direction2d
-        "rotateCounterclockwise is consistent with rotateBy"
+    Test.check1 "rotateCounterclockwise is consistent with rotateBy"
+        Random.direction2d
         (\direction ->
             Direction2d.rotateCounterclockwise direction
                 |> Expect.direction2d
@@ -143,8 +144,8 @@ rotateCounterclockwiseIsConsistentWithRotateBy =
 
 fromAngleIsConsistentWithAngleFrom : Test
 fromAngleIsConsistentWithAngleFrom =
-    Test.fuzz Fuzz.direction2d
-        "fromAngle is consistent with angleFrom"
+    Test.check1 "fromAngle is consistent with angleFrom"
+        Random.direction2d
         (\direction ->
             Direction2d.angleFrom Direction2d.x direction
                 |> Direction2d.fromAngle
@@ -154,8 +155,8 @@ fromAngleIsConsistentWithAngleFrom =
 
 fromAngleIsConsistentWithToAngle : Test
 fromAngleIsConsistentWithToAngle =
-    Test.fuzz Fuzz.direction2d
-        "fromAngle is consistent with toAngle"
+    Test.check1 "fromAngle is consistent with toAngle"
+        Random.direction2d
         (\direction ->
             Direction2d.toAngle direction
                 |> Direction2d.fromAngle
@@ -165,8 +166,8 @@ fromAngleIsConsistentWithToAngle =
 
 xComponentIsConsistentWithComponentIn : Test
 xComponentIsConsistentWithComponentIn =
-    Test.fuzz Fuzz.direction2d
-        "xComponent is consistent with componentIn"
+    Test.check1 "xComponent is consistent with componentIn"
+        Random.direction2d
         (\direction ->
             Direction2d.xComponent direction
                 |> Expect.exactly
@@ -176,8 +177,8 @@ xComponentIsConsistentWithComponentIn =
 
 yComponentIsConsistentWithComponentIn : Test
 yComponentIsConsistentWithComponentIn =
-    Test.fuzz Fuzz.direction2d
-        "yComponent is consistent with componentIn"
+    Test.check1 "yComponent is consistent with componentIn"
+        Random.direction2d
         (\direction ->
             Direction2d.yComponent direction
                 |> Expect.exactly
@@ -188,8 +189,8 @@ yComponentIsConsistentWithComponentIn =
 equalWithin : Test
 equalWithin =
     Test.describe "equalWithin"
-        [ Test.fuzz Fuzz.direction2d
-            "Rotation by 2 degrees"
+        [ Test.check1 "Rotation by 2 degrees"
+            Random.direction2d
             (\direction ->
                 Direction2d.rotateBy (Angle.degrees 2) direction
                     |> Expect.all
@@ -199,8 +200,8 @@ equalWithin =
                             >> Expect.equal False
                         ]
             )
-        , Test.fuzz Fuzz.direction2d
-            "Rotation by 90 degrees"
+        , Test.check1 "Rotation by 90 degrees"
+            Random.direction2d
             (\direction ->
                 Direction2d.rotateBy (Angle.degrees 90) direction
                     |> Expect.all
@@ -210,8 +211,8 @@ equalWithin =
                             >> Expect.equal False
                         ]
             )
-        , Test.fuzz Fuzz.direction2d
-            "Rotation by 178 degrees"
+        , Test.check1 "Rotation by 178 degrees"
+            Random.direction2d
             (\direction ->
                 Direction2d.rotateBy (Angle.degrees 178) direction
                     |> Expect.all
@@ -221,10 +222,9 @@ equalWithin =
                             >> Expect.equal False
                         ]
             )
-        , Test.fuzz2
-            Fuzz.direction2d
-            Fuzz.direction2d
-            "All directions are equal within 180 degrees"
+        , Test.check2 "All directions are equal within 180 degrees"
+            Random.direction2d
+            Random.direction2d
             (\firstDirection secondDirection ->
                 Direction2d.equalWithin (Angle.degrees 180.000001)
                     firstDirection
@@ -236,10 +236,9 @@ equalWithin =
 
 mirrorTwiceIsIdentity : Test
 mirrorTwiceIsIdentity =
-    Test.fuzz2
-        Fuzz.direction2d
-        Fuzz.axis2d
-        "Mirroring twice returns the original direction"
+    Test.check2 "Mirroring twice returns the original direction"
+        Random.direction2d
+        Random.axis2d
         (\direction axis ->
             direction
                 |> Direction2d.mirrorAcross axis
@@ -250,10 +249,9 @@ mirrorTwiceIsIdentity =
 
 mirrorNegatesAngleFromAxis : Test
 mirrorNegatesAngleFromAxis =
-    Test.fuzz2
-        Fuzz.direction2d
-        Fuzz.axis2d
-        "Mirroring negates angle from axis"
+    Test.check2 "Mirroring negates angle from axis"
+        Random.direction2d
+        Random.axis2d
         (\direction axis ->
             let
                 axisDirection =
@@ -274,10 +272,9 @@ mirrorNegatesAngleFromAxis =
 
 relativeToAndPlaceInAreInverses : Test
 relativeToAndPlaceInAreInverses =
-    Test.fuzz2
-        Fuzz.direction2d
-        Fuzz.frame2d
-        "relativeTo and placeIn are inverses"
+    Test.check2 "relativeTo and placeIn are inverses"
+        Random.direction2d
+        Random.frame2d
         (\direction frame ->
             direction
                 |> Direction2d.relativeTo frame
@@ -288,7 +285,7 @@ relativeToAndPlaceInAreInverses =
 
 components : Test
 components =
-    Test.fuzz Fuzz.direction2d "components and xComponent/yComponent are consistent" <|
+    Test.check1 "components and xComponent/yComponent are consistent" Random.direction2d <|
         \direction ->
             Expect.all
                 [ Tuple.first >> Expect.exactly (Direction2d.xComponent direction)

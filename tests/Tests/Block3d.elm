@@ -8,14 +8,15 @@ import Axis3d exposing (Axis3d)
 import Block3d exposing (Block3d)
 import Expect
 import Frame3d
-import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters)
 import LineSegment3d exposing (LineSegment3d)
 import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
+import Random exposing (Generator)
 import Test exposing (Test)
+import Test.Check as Test
 import Vector3d exposing (Vector3d)
 
 
@@ -23,6 +24,7 @@ type alias Transformation coordinates =
     { block : Block3d Meters coordinates -> Block3d Meters coordinates
     , point : Point3d Meters coordinates -> Point3d Meters coordinates
     , lineSegment : LineSegment3d Meters coordinates -> LineSegment3d Meters coordinates
+    , isZeroScale : Bool
     }
 
 
@@ -31,6 +33,7 @@ rotation axis angle =
     { block = Block3d.rotateAround axis angle
     , point = Point3d.rotateAround axis angle
     , lineSegment = LineSegment3d.rotateAround axis angle
+    , isZeroScale = False
     }
 
 
@@ -39,6 +42,7 @@ translation displacement =
     { block = Block3d.translateBy displacement
     , point = Point3d.translateBy displacement
     , lineSegment = LineSegment3d.translateBy displacement
+    , isZeroScale = False
     }
 
 
@@ -47,6 +51,7 @@ scaling centerPoint scale =
     { block = Block3d.scaleAbout centerPoint scale
     , point = Point3d.scaleAbout centerPoint scale
     , lineSegment = LineSegment3d.scaleAbout centerPoint scale
+    , isZeroScale = scale == 0.0
     }
 
 
@@ -55,26 +60,26 @@ mirroring plane =
     { block = Block3d.mirrorAcross plane
     , point = Point3d.mirrorAcross plane
     , lineSegment = LineSegment3d.mirrorAcross plane
+    , isZeroScale = False
     }
 
 
-transformationFuzzer : Fuzzer (Transformation coordinates)
-transformationFuzzer =
-    Fuzz.oneOf
-        [ Fuzz.map2 rotation Fuzz.axis3d Fuzz.angle
-        , Fuzz.map translation Fuzz.vector3d
-        , Fuzz.map2 scaling Fuzz.point3d Fuzz.scale
-        , Fuzz.map mirroring Fuzz.plane3d
+transformationGenerator : Generator (Transformation coordinates)
+transformationGenerator =
+    Random.oneOf
+        (Random.map2 rotation Random.axis3d Random.angle)
+        [ Random.map translation Random.vector3d
+        , Random.map2 scaling Random.point3d Random.scale
+        , Random.map mirroring Random.plane3d
         ]
 
 
 containmentIsConsistent : Test
 containmentIsConsistent =
-    Test.fuzz3
-        transformationFuzzer
-        Fuzz.block3d
-        Fuzz.point3d
-        "Block/point containment is consistent through transformation"
+    Test.check3 "Block/point containment is consistent through transformation"
+        transformationGenerator
+        Random.block3d
+        Random.point3d
         (\transformation block point ->
             let
                 initialContainment =
@@ -89,7 +94,11 @@ containmentIsConsistent =
                 finalContainment =
                     Block3d.contains transformedPoint transformedBlock
             in
-            finalContainment |> Expect.equal initialContainment
+            if transformation.isZeroScale then
+                finalContainment |> Expect.equal True
+
+            else
+                finalContainment |> Expect.equal initialContainment
         )
 
 
@@ -97,10 +106,9 @@ verticesAreConsistent : Test
 verticesAreConsistent =
     let
         testVertex description accessor =
-            Test.fuzz2
-                transformationFuzzer
-                Fuzz.block3d
-                description
+            Test.check2 description
+                transformationGenerator
+                Random.block3d
                 (\transformation block ->
                     let
                         vertex =

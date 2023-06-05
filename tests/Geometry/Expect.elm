@@ -326,8 +326,11 @@ quantityContainedIn interval value =
                 (Interval.minValue interval |> Quantity.minus (Quantity defaultTolerance))
                 (Interval.maxValue interval |> Quantity.plus (Quantity defaultTolerance))
     in
-    Interval.contains value tolerantInterval
-        |> Expect.true
+    if Interval.contains value tolerantInterval then
+        Expect.pass
+
+    else
+        Expect.fail
             ("Expected quantity "
                 ++ Debug.toString value
                 ++ " to be within interval "
@@ -987,8 +990,11 @@ point2dContainedIn box point =
                 , maxY = extrema.maxY |> Quantity.plus yOffset
                 }
     in
-    BoundingBox2d.contains point tolerantBox
-        |> Expect.true
+    if BoundingBox2d.contains point tolerantBox then
+        Expect.pass
+
+    else
+        Expect.fail
             ("Expected point "
                 ++ Debug.toString point
                 ++ " to be within bounding box "
@@ -1057,8 +1063,11 @@ point3dContainedIn box point =
                 , maxZ = extrema.maxZ |> Quantity.plus zOffset
                 }
     in
-    BoundingBox3d.contains point tolerantBox
-        |> Expect.true
+    if BoundingBox3d.contains point tolerantBox then
+        Expect.pass
+
+    else
+        Expect.fail
             ("Expected point "
                 ++ Debug.toString point
                 ++ " to be within bounding box "

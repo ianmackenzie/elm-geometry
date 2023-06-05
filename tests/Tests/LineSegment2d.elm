@@ -14,15 +14,15 @@ module Tests.LineSegment2d exposing
 
 import Axis2d
 import Expect
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (meters)
 import LineSegment2d
 import Point2d
 import Quantity
 import Quantity.Interval as Interval
 import Test exposing (Test)
+import Test.Check as Test
 import Triangle2d
 import Vector2d
 
@@ -153,13 +153,16 @@ intersectionWorksProperly =
                                 secondBesideFirst =
                                     oneOneSideOf firstAxis secondSegment
                             in
-                            Expect.true "One segment is fully one one side of the other"
-                                (secondBesideFirst || firstBesideSecond)
+                            if secondBesideFirst || firstBesideSecond then
+                                Expect.pass
+
+                            else
+                                Expect.fail "One segment is fully one one side of the other"
 
                         _ ->
                             Expect.pass
     in
-    Test.fuzz2 Fuzz.lineSegment2d Fuzz.lineSegment2d description expectation
+    Test.check2 description Random.lineSegment2d Random.lineSegment2d expectation
 
 
 intersectionFindsCoincidentEndpoints : Test
@@ -194,11 +197,10 @@ intersectionFindsCoincidentEndpoints =
             else
                 Expect.pass
     in
-    Test.fuzz3
-        Fuzz.point2d
-        Fuzz.point2d
-        Fuzz.point2d
-        description
+    Test.check3 description
+        Random.point2d
+        Random.point2d
+        Random.point2d
         expectation
 
 
@@ -248,19 +250,17 @@ intersectionFindsCollinearCoincidentEndpoints =
                 ]
                 (Just midPoint)
     in
-    Test.fuzz3
-        Fuzz.point2d
-        Fuzz.vector2d
-        (Fuzz.floatRange 0 1)
-        description
+    Test.check3 description
+        Random.point2d
+        Random.vector2d
+        Random.parameterValue
         expectation
 
 
 intersectionOfEqualPointSegmentIsPoint : Test
 intersectionOfEqualPointSegmentIsPoint =
-    Test.fuzz
-        Fuzz.point2d
-        "Intersection of trivial segment (a point) with itself is the point."
+    Test.check1 "Intersection of trivial segment (a point) with itself is the point."
+        Random.point2d
         (\point ->
             let
                 segment =
@@ -273,9 +273,8 @@ intersectionOfEqualPointSegmentIsPoint =
 
 intersectionOfEqualLineSegmentsIsNothing : Test
 intersectionOfEqualLineSegmentsIsNothing =
-    Test.fuzz
-        Fuzz.lineSegment2d
-        "Intersection of two identical non degenerate line segments is Nothing"
+    Test.check1 "Intersection of two identical non degenerate line segments is Nothing"
+        Random.lineSegment2d
         (\lineSegment ->
             let
                 ( start, end ) =
@@ -292,9 +291,8 @@ intersectionOfEqualLineSegmentsIsNothing =
 
 intersectionOfReversedEqualLineSegmentsIsNothing : Test
 intersectionOfReversedEqualLineSegmentsIsNothing =
-    Test.fuzz
-        Fuzz.lineSegment2d
-        "Intersection of two reverse identical non degenerate line segments is Nothing"
+    Test.check1 "Intersection of two reverse identical non degenerate line segments is Nothing"
+        Random.lineSegment2d
         (\lineSegment ->
             let
                 ( start, end ) =
@@ -412,20 +410,18 @@ sharedEndpointOnThirdSegmentInducesAnIntersection =
                             |> Expect.all
                                 [ Expect.point2d p1, Expect.point2d p2 ]
     in
-    Test.fuzz3
-        Fuzz.lineSegment2d
-        Fuzz.point2d
-        Fuzz.point2d
-        description
+    Test.check3 description
+        Random.lineSegment2d
+        Random.point2d
+        Random.point2d
         expectation
 
 
 intersectionIsSymmetric : Test
 intersectionIsSymmetric =
-    Test.fuzz2
-        Fuzz.lineSegment2d
-        Fuzz.lineSegment2d
-        "Intersection should be (approximately) symmetric"
+    Test.check2 "Intersection should be (approximately) symmetric"
+        Random.lineSegment2d
+        Random.lineSegment2d
         (\lineSegment1 lineSegment2 ->
             let
                 intersection12 =
@@ -445,10 +441,9 @@ intersectionIsSymmetric =
 
 reversingDoesNotAffectIntersection : Test
 reversingDoesNotAffectIntersection =
-    Test.fuzz2
-        Fuzz.lineSegment2d
-        Fuzz.lineSegment2d
-        "Reversing one line segment should not change the intersection point"
+    Test.check2 "Reversing one line segment should not change the intersection point"
+        Random.lineSegment2d
+        Random.lineSegment2d
         (\lineSegment1 lineSegment2 ->
             let
                 normalIntersection =
@@ -469,35 +464,44 @@ reversingDoesNotAffectIntersection =
 
 signedDistanceFromContainsDistanceForAnyPoint : Test
 signedDistanceFromContainsDistanceForAnyPoint =
-    Test.fuzz3
-        Fuzz.lineSegment2d
-        (Fuzz.floatRange 0 1)
-        Fuzz.axis2d
-        "signedDistanceFrom contains distance for any point on the line segment"
+    Test.check3 "signedDistanceFrom contains distance for any point on the line segment"
+        Random.lineSegment2d
+        Random.parameterValue
+        Random.axis2d
         (\lineSegment t axis ->
             let
                 point =
                     LineSegment2d.interpolate lineSegment t
             in
-            LineSegment2d.signedDistanceFrom axis lineSegment
-                |> Interval.contains (Point2d.signedDistanceFrom axis point)
-                |> Expect.true "Interval should contain distance for any point on the line segment"
+            if
+                LineSegment2d.signedDistanceFrom axis lineSegment
+                    |> Interval.contains (Point2d.signedDistanceFrom axis point)
+            then
+                Expect.pass
+
+            else
+                Expect.fail "Interval should contain distance for any point on the line segment"
         )
 
 
 signedDistanceAlongContainsDistanceForAnyPoint : Test
 signedDistanceAlongContainsDistanceForAnyPoint =
-    Test.fuzz3
-        Fuzz.lineSegment2d
-        (Fuzz.floatRange 0 1)
-        Fuzz.axis2d
+    Test.check3
         "signedDistanceAlong contains distance for any point on the line segment"
+        Random.lineSegment2d
+        Random.parameterValue
+        Random.axis2d
         (\lineSegment t axis ->
             let
                 point =
                     LineSegment2d.interpolate lineSegment t
             in
-            LineSegment2d.signedDistanceAlong axis lineSegment
-                |> Interval.contains (Point2d.signedDistanceAlong axis point)
-                |> Expect.true "Interval should contain distance for any point on the line segment"
+            if
+                LineSegment2d.signedDistanceAlong axis lineSegment
+                    |> Interval.contains (Point2d.signedDistanceAlong axis point)
+            then
+                Expect.pass
+
+            else
+                Expect.fail "Interval should contain distance for any point on the line segment"
         )

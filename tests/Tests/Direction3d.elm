@@ -13,23 +13,24 @@ import Angle
 import Direction3d
 import Expect
 import Frame3d
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (meters)
 import Point3d
 import Quantity exposing (Quantity(..))
+import Random
 import SketchPlane3d
 import Test exposing (Test)
+import Test.Check as Test
 import Vector3d
 import Volume exposing (cubicMeters)
 
 
 angleFromAndEqualWithinAreConsistent : Test
 angleFromAndEqualWithinAreConsistent =
-    Test.fuzz2 Fuzz.direction3d
-        Fuzz.direction3d
-        "angleFrom and equalWithin are consistent"
+    Test.check2 "angleFrom and equalWithin are consistent"
+        Random.direction3d
+        Random.direction3d
         (\firstDirection secondDirection ->
             let
                 angle =
@@ -38,19 +39,21 @@ angleFromAndEqualWithinAreConsistent =
                 tolerance =
                     angle |> Quantity.plus (Angle.radians 1.0e-12)
             in
-            Expect.true "Two directions should be equal to within the angle between them"
-                (Direction3d.equalWithin tolerance
-                    firstDirection
-                    secondDirection
-                )
+            if Direction3d.equalWithin tolerance firstDirection secondDirection then
+                Expect.pass
+
+            else
+                Expect.fail "Two directions should be equal to within the angle between them"
         )
 
 
 orthonormalizeProducesValidFrameBasis : Test
 orthonormalizeProducesValidFrameBasis =
-    Test.fuzz (Fuzz.tuple3 ( Fuzz.vector3d, Fuzz.vector3d, Fuzz.vector3d ))
-        "orthonormalize produces a valid frame basis"
-        (\( v1, v2, v3 ) ->
+    Test.check3 "orthonormalize produces a valid frame basis"
+        Random.vector3d
+        Random.vector3d
+        Random.vector3d
+        (\v1 v2 v3 ->
             let
                 tripleProduct =
                     v1 |> Vector3d.cross v2 |> Vector3d.dot v3
@@ -77,9 +80,11 @@ orthonormalizeProducesValidFrameBasis =
 
 orthonormalizeFollowsOriginalVectors : Test
 orthonormalizeFollowsOriginalVectors =
-    Test.fuzz (Fuzz.tuple3 ( Fuzz.vector3d, Fuzz.vector3d, Fuzz.vector3d ))
-        "orthonormalized directions follow original vectors properly"
-        (\( v1, v2, v3 ) ->
+    Test.check3 "orthonormalized directions follow original vectors properly"
+        Random.vector3d
+        Random.vector3d
+        Random.vector3d
+        (\v1 v2 v3 ->
             case Direction3d.orthonormalize v1 v2 v3 of
                 Just directions ->
                     directions
@@ -129,8 +134,8 @@ orthonormalizingCoplanarVectorsReturnsNothing =
 
 perpendicularDirectionIsPerpendicular : Test
 perpendicularDirectionIsPerpendicular =
-    Test.fuzz Fuzz.direction3d
-        "perpendicularTo returns a perpendicular direction"
+    Test.check1 "perpendicularTo returns a perpendicular direction"
+        Random.direction3d
         (\direction ->
             Direction3d.perpendicularTo direction
                 |> Expect.direction3dPerpendicularTo direction
@@ -139,8 +144,8 @@ perpendicularDirectionIsPerpendicular =
 
 perpendicularDirectionIsValid : Test
 perpendicularDirectionIsValid =
-    Test.fuzz Fuzz.direction3d
-        "perpendicularTo returns a valid direction"
+    Test.check1 "perpendicularTo returns a valid direction"
+        Random.direction3d
         (\direction ->
             Direction3d.perpendicularTo direction
                 |> Expect.validDirection3d
@@ -149,10 +154,9 @@ perpendicularDirectionIsValid =
 
 projectionIntoSketchPlaneWorksProperly : Test
 projectionIntoSketchPlaneWorksProperly =
-    Test.fuzz2
-        Fuzz.direction3d
-        Fuzz.sketchPlane3d
-        "Projecting a direction into a sketch plane works properly"
+    Test.check2 "Projecting a direction into a sketch plane works properly"
+        Random.direction3d
+        Random.sketchPlane3d
         (\direction sketchPlane ->
             let
                 normalDirection =
@@ -212,7 +216,7 @@ third ( _, _, z ) =
 
 components : Test
 components =
-    Test.fuzz Fuzz.direction3d "components and xComponent etc. are consistent" <|
+    Test.check1 "components and xComponent etc. are consistent" Random.direction3d <|
         \direction ->
             Expect.all
                 [ first >> Expect.exactly (Direction3d.xComponent direction)

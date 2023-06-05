@@ -7,9 +7,7 @@ module Tests.RationalQuadraticSpline2d exposing
 
 import CubicSpline2d
 import Expect exposing (Expectation, FloatingPointTolerance(..))
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Interval
 import Length exposing (Length, Meters)
@@ -17,8 +15,8 @@ import Point2d exposing (Point2d)
 import Quantity
 import Random
 import RationalQuadraticSpline2d exposing (RationalQuadraticSpline2d)
-import Shrink
 import Test exposing (Test)
+import Test.Check as Test
 import Tests.Generic.Curve2d
 import Vector2d
 
@@ -122,11 +120,10 @@ bSplines =
 splitAt : Test
 splitAt =
     Test.describe "splitAt"
-        [ Test.fuzz3
-            Fuzz.rationalQuadraticSpline2d
-            Fuzz.parameterValue
-            Fuzz.parameterValue
-            "first"
+        [ Test.check3 "first"
+            Random.rationalQuadraticSpline2d
+            Random.parameterValue
+            Random.parameterValue
             (\spline t0 t1 ->
                 let
                     ( first, _ ) =
@@ -136,11 +133,10 @@ splitAt =
                     |> Expect.point2d
                         (RationalQuadraticSpline2d.pointOn spline (t1 * t0))
             )
-        , Test.fuzz3
-            Fuzz.rationalQuadraticSpline2d
-            Fuzz.parameterValue
-            Fuzz.parameterValue
-            "second"
+        , Test.check3 "second"
+            Random.rationalQuadraticSpline2d
+            Random.parameterValue
+            Random.parameterValue
             (\spline t0 t1 ->
                 let
                     ( _, second ) =

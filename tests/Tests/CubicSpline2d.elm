@@ -12,13 +12,13 @@ module Tests.CubicSpline2d exposing
 import CubicSpline2d exposing (CubicSpline2d)
 import Expect exposing (Expectation, FloatingPointTolerance(..))
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Interval
 import Length exposing (Meters, meters)
 import Point2d
 import Quantity exposing (zero)
 import Test exposing (Test)
+import Test.Check as Test
 import Tests.Generic.Curve2d
 import Tests.QuadraticSpline2d
 import Vector2d
@@ -50,8 +50,8 @@ genericTests =
 
 fromEndpointsReproducesSpline : Test
 fromEndpointsReproducesSpline =
-    Test.fuzz Fuzz.cubicSpline2d
-        "CubicSpline2d.fromEndpoints reproduces original spline"
+    Test.check1 "CubicSpline2d.fromEndpoints reproduces original spline"
+        Random.cubicSpline2d
         (\spline ->
             let
                 startPoint =
@@ -73,8 +73,8 @@ fromEndpointsReproducesSpline =
 
 arcLengthMatchesAnalytical : Test
 arcLengthMatchesAnalytical =
-    Test.fuzz Tests.QuadraticSpline2d.curvedSpline
-        "arc length matches analytical formula"
+    Test.check1 "arc length matches analytical formula"
+        Tests.QuadraticSpline2d.curvedSpline
         (\quadraticSpline ->
             quadraticSpline
                 |> CubicSpline2d.fromQuadraticSpline
@@ -92,8 +92,8 @@ arcLengthMatchesAnalytical =
 
 pointAtZeroLengthIsStart : Test
 pointAtZeroLengthIsStart =
-    Test.fuzz Fuzz.cubicSpline2d
-        "point along spline at zero length is start point"
+    Test.check1 "point along spline at zero length is start point"
+        Random.cubicSpline2d
         (\spline ->
             case CubicSpline2d.nondegenerate spline of
                 Ok nondegenerateSpline ->
@@ -113,8 +113,8 @@ pointAtZeroLengthIsStart =
 
 pointAtArcLengthIsEnd : Test
 pointAtArcLengthIsEnd =
-    Test.fuzz Fuzz.cubicSpline2d
-        "point along spline at arc length is end point"
+    Test.check1 "point along spline at arc length is end point"
+        Random.cubicSpline2d
         (\spline ->
             case CubicSpline2d.nondegenerate spline of
                 Ok nondegenerateSpline ->
@@ -137,8 +137,8 @@ pointAtArcLengthIsEnd =
 
 bSplineReproducesSpline : Test
 bSplineReproducesSpline =
-    Test.fuzz Fuzz.cubicSpline2d
-        "Can reconstruct a cubic spline with a B-spline with repeated knots"
+    Test.check1 "Can reconstruct a cubic spline with a B-spline with repeated knots"
+        Random.cubicSpline2d
         (\spline ->
             let
                 p1 =

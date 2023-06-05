@@ -3,16 +3,17 @@ module Tests.Circle2d exposing (boundingBoxContainsCenter, intersectsBoundingBox
 import BoundingBox2d
 import Circle2d
 import Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length
 import Point2d
 import Test exposing (Test, test)
+import Test.Check as Test
 
 
 boundingBoxContainsCenter : Test
 boundingBoxContainsCenter =
-    Test.fuzz Fuzz.circle2d
-        "A circle's bounding box contains its center point"
+    Test.check1 "A circle's bounding box contains its center point"
+        Random.circle2d
         (\circle ->
             let
                 boundingBox =
@@ -21,9 +22,11 @@ boundingBoxContainsCenter =
                 centerPoint =
                     Circle2d.centerPoint circle
             in
-            Expect.true
-                "Circle bounding box does not contain the center point"
-                (BoundingBox2d.contains centerPoint boundingBox)
+            if BoundingBox2d.contains centerPoint boundingBox then
+                Expect.pass
+
+            else
+                Expect.fail "Circle bounding box does not contain the center point"
         )
 
 
@@ -57,8 +60,11 @@ intersectsBoundingBox =
                     circle =
                         someCircle 2 Point2d.origin
                 in
-                Circle2d.intersectsBoundingBox box circle
-                    |> Expect.true noIntersectionFound
+                if Circle2d.intersectsBoundingBox box circle then
+                    Expect.pass
+
+                else
+                    Expect.fail noIntersectionFound
         , test "Detects no intersection when not overlapping" <|
             \_ ->
                 let
@@ -69,8 +75,11 @@ intersectsBoundingBox =
                         Point2d.meters -20 -20
                             |> someCircle 5
                 in
-                Circle2d.intersectsBoundingBox box circle
-                    |> Expect.false unexpectedIntersection
+                if Circle2d.intersectsBoundingBox box circle then
+                    Expect.fail unexpectedIntersection
+
+                else
+                    Expect.pass
         , test "Detects intersects when box and circle touch by exactly one pixel" <|
             \_ ->
                 let
@@ -80,6 +89,9 @@ intersectsBoundingBox =
                     circle =
                         someCircle 1 Point2d.origin
                 in
-                Circle2d.intersectsBoundingBox box circle
-                    |> Expect.true noIntersectionFound
+                if Circle2d.intersectsBoundingBox box circle then
+                    Expect.pass
+
+                else
+                    Expect.fail noIntersectionFound
         ]

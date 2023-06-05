@@ -20,11 +20,12 @@ import Direction2d
 import Expect
 import Frame2d
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (meters)
 import Point2d
 import Quantity
 import Test exposing (Test)
+import Test.Check as Test
 import Vector2d
 
 
@@ -159,10 +160,9 @@ placeInExample =
 
 throughPoints : Test
 throughPoints =
-    Test.fuzz2
-        Fuzz.point2d
-        Fuzz.point2d
-        "throughPoints"
+    Test.check2 "throughPoints"
+        Random.point2d
+        Random.point2d
         (\firstPoint secondPoint ->
             case Axis2d.throughPoints firstPoint secondPoint of
                 Just axis ->
@@ -182,10 +182,9 @@ throughPoints =
 
 intersectionPoint : Test
 intersectionPoint =
-    Test.fuzz2
-        Fuzz.axis2d
-        Fuzz.axis2d
-        "intersectionPoint"
+    Test.check2 "intersectionPoint"
+        Random.axis2d
+        Random.axis2d
         (\firstAxis secondAxis ->
             let
                 -- Check how close the axes are to being parallel

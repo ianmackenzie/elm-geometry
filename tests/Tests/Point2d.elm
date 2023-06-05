@@ -13,13 +13,14 @@ module Tests.Point2d exposing
     )
 
 import Expect
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length
 import Point2d
 import Quantity exposing (zero)
+import Random
 import Test exposing (Test)
+import Test.Check as Test
 import Triangle2d
 import Vector2d
 
@@ -43,7 +44,7 @@ rotationPreservesDistance =
             in
             Expect.quantity initialDistance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point2d Fuzz.point2d Fuzz.angle description expectation
+    Test.check3 description Random.point2d Random.point2d Random.angle expectation
 
 
 projectionOntoAxisPreservesDistance : Test
@@ -65,15 +66,14 @@ projectionOntoAxisPreservesDistance =
             in
             Expect.quantity projectedDistance distance
     in
-    Test.fuzz2 Fuzz.point2d Fuzz.axis2d description expectation
+    Test.check2 description Random.point2d Random.axis2d expectation
 
 
 midpointIsEquidistant : Test
 midpointIsEquidistant =
-    Test.fuzz2
-        Fuzz.point2d
-        Fuzz.point2d
-        "Midpoint of two points is equidistant from those points"
+    Test.check2 "Midpoint of two points is equidistant from those points"
+        Random.point2d
+        Random.point2d
         (\p1 p2 ->
             let
                 midpoint =
@@ -87,8 +87,8 @@ midpointIsEquidistant =
 
 interpolationReturnsExactEndpoints : Test
 interpolationReturnsExactEndpoints =
-    Test.fuzz (Fuzz.tuple ( Fuzz.point2d, Fuzz.point2d ))
-        "Interpolation returns exact start point for t=0 and exact end point for t=1"
+    Test.check1 "Interpolation returns exact start point for t=0 and exact end point for t=1"
+        (Random.pair Random.point2d Random.point2d)
         (Expect.all
             [ \( p1, p2 ) -> Point2d.interpolateFrom p1 p2 0 |> Expect.equal p1
             , \( p1, p2 ) -> Point2d.interpolateFrom p1 p2 1 |> Expect.equal p2
@@ -98,11 +98,10 @@ interpolationReturnsExactEndpoints =
 
 translateByAndInAreConsistent : Test
 translateByAndInAreConsistent =
-    Test.fuzz3
-        Fuzz.point2d
-        Fuzz.direction2d
-        Fuzz.length
-        "translateBy and translateIn are consistent"
+    Test.check3 "translateBy and translateIn are consistent"
+        Random.point2d
+        Random.direction2d
+        Random.length
         (\point direction distance ->
             let
                 displacement =
@@ -116,11 +115,10 @@ translateByAndInAreConsistent =
 
 circumcenterIsValidOrNothing : Test
 circumcenterIsValidOrNothing =
-    Test.fuzz3
-        Fuzz.point2d
-        Fuzz.point2d
-        Fuzz.point2d
-        "The circumcenter of three points is either Nothing or is equidistant from each point"
+    Test.check3 "The circumcenter of three points is either Nothing or is equidistant from each point"
+        Random.point2d
+        Random.point2d
+        Random.point2d
         (\p1 p2 p3 ->
             case Point2d.circumcenter p1 p2 p3 of
                 Nothing ->
@@ -162,10 +160,7 @@ trickyCircumcenter =
 
 consistentTupleInterop : Test
 consistentTupleInterop =
-    Test.fuzz
-        Fuzz.point2d
-        "toTuple and then fromTuple return the same point"
-    <|
+    Test.check1 "toTuple and then fromTuple return the same point" Random.point2d <|
         \point ->
             Point2d.toTuple Length.inMeters point
                 |> Point2d.fromTuple Length.meters
@@ -174,10 +169,7 @@ consistentTupleInterop =
 
 consistentRecordInterop : Test
 consistentRecordInterop =
-    Test.fuzz
-        Fuzz.point2d
-        "toRecord and then fromRecord return the same point"
-    <|
+    Test.check1 "toRecord and then fromRecord return the same point" Random.point2d <|
         \point ->
             Point2d.toRecord Length.inInches point
                 |> Point2d.fromRecord Length.inches
@@ -186,7 +178,7 @@ consistentRecordInterop =
 
 coordinates : Test
 coordinates =
-    Test.fuzz Fuzz.point2d "coordinates and xCoordinate/yCoordinate are consistent" <|
+    Test.check1 "coordinates and xCoordinate/yCoordinate are consistent" Random.point2d <|
         \point ->
             Expect.all
                 [ Tuple.first >> Expect.quantity (Point2d.xCoordinate point)
@@ -197,10 +189,9 @@ coordinates =
 
 coordinatesIn : Test
 coordinatesIn =
-    Test.fuzz2
-        Fuzz.point2d
-        Fuzz.frame2d
-        "coordinatesIn and xCoordinateIn/yCoordinateIn are consistent"
+    Test.check2 "coordinatesIn and xCoordinateIn/yCoordinateIn are consistent"
+        Random.point2d
+        Random.frame2d
         (\point frame ->
             Expect.all
                 [ Tuple.first >> Expect.quantity (Point2d.xCoordinateIn frame point)

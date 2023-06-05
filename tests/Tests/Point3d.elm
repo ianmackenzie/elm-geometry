@@ -19,14 +19,15 @@ module Tests.Point3d exposing
 
 import Direction3d
 import Expect
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Plane3d
 import Point3d
 import Quantity exposing (zero)
+import Random
 import SketchPlane3d
 import Test exposing (Test)
+import Test.Check as Test
 import Triangle3d
 import Vector3d
 
@@ -50,7 +51,7 @@ rotationAboutAxisPreservesDistanceAlong =
             in
             Expect.quantity distance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.angle description expectation
+    Test.check3 description Random.point3d Random.axis3d Random.angle expectation
 
 
 rotationAboutAxisPreservesDistanceFrom : Test
@@ -72,15 +73,14 @@ rotationAboutAxisPreservesDistanceFrom =
             in
             Expect.quantity distance rotatedDistance
     in
-    Test.fuzz3 Fuzz.point3d Fuzz.axis3d Fuzz.angle description expectation
+    Test.check3 description Random.point3d Random.axis3d Random.angle expectation
 
 
 midpointIsEquidistant : Test
 midpointIsEquidistant =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.point3d
-        "Midpoint of two points is equidistant from those points"
+    Test.check2 "Midpoint of two points is equidistant from those points"
+        Random.point3d
+        Random.point3d
         (\p1 p2 ->
             let
                 midpoint =
@@ -94,8 +94,8 @@ midpointIsEquidistant =
 
 interpolationReturnsExactEndpoints : Test
 interpolationReturnsExactEndpoints =
-    Test.fuzz (Fuzz.tuple ( Fuzz.point3d, Fuzz.point3d ))
-        "Interpolation returns exact start point for t=0 and exact end point for t=1"
+    Test.check1 "Interpolation returns exact start point for t=0 and exact end point for t=1"
+        (Random.pair Random.point3d Random.point3d)
         (Expect.all
             [ \( p1, p2 ) -> Point3d.interpolateFrom p1 p2 0 |> Expect.equal p1
             , \( p1, p2 ) -> Point3d.interpolateFrom p1 p2 1 |> Expect.equal p2
@@ -105,9 +105,9 @@ interpolationReturnsExactEndpoints =
 
 projectIntoThenPlaceOntoIsProjectOnto : Test
 projectIntoThenPlaceOntoIsProjectOnto =
-    Test.fuzz2 Fuzz.point3d
-        Fuzz.sketchPlane3d
-        "Point3d.projectInto followed by Point3d.on is equivalent to Point3d.projectOnto"
+    Test.check2 "Point3d.projectInto followed by Point3d.on is equivalent to Point3d.projectOnto"
+        Random.point3d
+        Random.sketchPlane3d
         (\point sketchPlane ->
             let
                 plane =
@@ -121,9 +121,9 @@ projectIntoThenPlaceOntoIsProjectOnto =
 
 mirrorFlipsSignedDistance : Test
 mirrorFlipsSignedDistance =
-    Test.fuzz2 Fuzz.point3d
-        Fuzz.plane3d
-        "'mirrorAcross plane' changes the sign of the 'signedDistanceFrom plane'"
+    Test.check2 "'mirrorAcross plane' changes the sign of the 'signedDistanceFrom plane'"
+        Random.point3d
+        Random.plane3d
         (\point plane ->
             let
                 signedDistance =
@@ -137,10 +137,10 @@ mirrorFlipsSignedDistance =
 
 translationByPerpendicularDoesNotChangeSignedDistance : Test
 translationByPerpendicularDoesNotChangeSignedDistance =
-    Test.fuzz3 Fuzz.point3d
-        Fuzz.plane3d
-        Fuzz.length
-        "Translating in a direction perpendicular to a plane's normal direction does not change signed distance from that plane"
+    Test.check3 "Translating in a direction perpendicular to a plane's normal direction does not change signed distance from that plane"
+        Random.point3d
+        Random.plane3d
+        Random.length
         (\point plane distance ->
             let
                 originalSignedDistance =
@@ -161,11 +161,10 @@ translationByPerpendicularDoesNotChangeSignedDistance =
 
 translateByAndInAreConsistent : Test
 translateByAndInAreConsistent =
-    Test.fuzz3
-        Fuzz.point3d
-        Fuzz.direction3d
-        Fuzz.length
-        "translateBy and translateIn are consistent"
+    Test.check3 "translateBy and translateIn are consistent"
+        Random.point3d
+        Random.direction3d
+        Random.length
         (\point direction distance ->
             let
                 displacement =
@@ -179,10 +178,9 @@ translateByAndInAreConsistent =
 
 projectIntoResultsInPerpendicularVector : Test
 projectIntoResultsInPerpendicularVector =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.sketchPlane3d
-        "The vector from a point to that point projected into a sketch plane is perpendicular to both sketch plane basis directions"
+    Test.check2 "The vector from a point to that point projected into a sketch plane is perpendicular to both sketch plane basis directions"
+        Random.point3d
+        Random.sketchPlane3d
         (\point sketchPlane ->
             let
                 point2d =
@@ -210,11 +208,10 @@ projectIntoResultsInPerpendicularVector =
 
 circumcenterIsValidOrNothing : Test
 circumcenterIsValidOrNothing =
-    Test.fuzz3
-        Fuzz.point3d
-        Fuzz.point3d
-        Fuzz.point3d
-        "The circumcenter of three points is either Nothing or is equidistant from each point"
+    Test.check3 "The circumcenter of three points is either Nothing or is equidistant from each point"
+        Random.point3d
+        Random.point3d
+        Random.point3d
         (\p1 p2 p3 ->
             case Point3d.circumcenter p1 p2 p3 of
                 Nothing ->
@@ -245,10 +242,9 @@ circumcenterIsValidOrNothing =
 
 relativeToIsInverseOfPlaceIn : Test
 relativeToIsInverseOfPlaceIn =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.frame3d
-        "relativeTo is inverse of placeIn"
+    Test.check2 "relativeTo is inverse of placeIn"
+        Random.point3d
+        Random.frame3d
         (\point frame ->
             point
                 |> Point3d.placeIn frame
@@ -259,10 +255,9 @@ relativeToIsInverseOfPlaceIn =
 
 placeInIsInverseOfRelativeTo : Test
 placeInIsInverseOfRelativeTo =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.frame3d
-        "placeIn is inverse of relativeTo"
+    Test.check2 "placeIn is inverse of relativeTo"
+        Random.point3d
+        Random.frame3d
         (\point frame ->
             point
                 |> Point3d.relativeTo frame
@@ -273,10 +268,9 @@ placeInIsInverseOfRelativeTo =
 
 distanceFromIsCommutative : Test
 distanceFromIsCommutative =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.point3d
-        "distance from here to there is the same as there to here"
+    Test.check2 "distance from here to there is the same as there to here"
+        Random.point3d
+        Random.point3d
         (\here there ->
             Point3d.distanceFrom here there
                 |> Expect.equal (Point3d.distanceFrom there here)
@@ -285,11 +279,10 @@ distanceFromIsCommutative =
 
 samePointsSameCentroid : Test
 samePointsSameCentroid =
-    Test.fuzz3
-        Fuzz.point3d
-        Fuzz.point3d
-        Fuzz.point3d
-        "3 Point3ds should produce same centroid calling centroid or centroid3"
+    Test.check3 "3 Point3ds should produce same centroid calling centroid or centroid3"
+        Random.point3d
+        Random.point3d
+        Random.point3d
         (\p1 p2 p3 ->
             Point3d.centroid p1 [ p2, p3 ]
                 |> Expect.point3d (Point3d.centroid3 p1 p2 p3)
@@ -313,7 +306,7 @@ third ( _, _, z ) =
 
 coordinates : Test
 coordinates =
-    Test.fuzz Fuzz.point3d "coordinates and xCoordinate etc. are consistent" <|
+    Test.check1 "coordinates and xCoordinate etc. are consistent" Random.point3d <|
         \point ->
             Expect.all
                 [ first >> Expect.quantity (Point3d.xCoordinate point)
@@ -325,10 +318,9 @@ coordinates =
 
 coordinatesIn : Test
 coordinatesIn =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.frame3d
-        "coordinatesIn and xCoordinateIn etc. are consistent"
+    Test.check2 "coordinatesIn and xCoordinateIn etc. are consistent"
+        Random.point3d
+        Random.frame3d
         (\point frame ->
             Expect.all
                 [ first >> Expect.quantity (Point3d.xCoordinateIn frame point)

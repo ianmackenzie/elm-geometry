@@ -1,16 +1,17 @@
 module Tests.Triangle2d exposing (triangleContainsOwnCentroid)
 
 import Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Quantity
 import Test exposing (Test)
+import Test.Check as Test
 import Triangle2d
 
 
 triangleContainsOwnCentroid : Test
 triangleContainsOwnCentroid =
-    Test.fuzz Fuzz.triangle2d
-        "non-zero area triangle contains its own centroid"
+    Test.check1 "non-zero area triangle contains its own centroid"
+        Random.triangle2d
         (\triangle ->
             let
                 centroid =
@@ -19,6 +20,9 @@ triangleContainsOwnCentroid =
                 area =
                     Triangle2d.area triangle
             in
-            Expect.true "non-zero area triangle did not contain its own centroid"
-                (area == Quantity.zero || Triangle2d.contains centroid triangle)
+            if area == Quantity.zero || Triangle2d.contains centroid triangle then
+                Expect.pass
+
+            else
+                Expect.fail "non-zero area triangle did not contain its own centroid"
         )

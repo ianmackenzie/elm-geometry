@@ -6,22 +6,23 @@ module Tests.SketchPlane3d exposing
 import Direction3d
 import Expect
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import SketchPlane3d
 import Test exposing (Test)
+import Test.Check as Test
 
 
 randomlyGeneratedSketchPlanesAreValid : Test
 randomlyGeneratedSketchPlanesAreValid =
-    Test.fuzz Fuzz.sketchPlane3d
-        "Randomly generated sketch planes are valid"
+    Test.check1 "Randomly generated sketch planes are valid"
+        Random.sketchPlane3d
         Expect.validSketchPlane3d
 
 
 normalDirectionIsValid : Test
 normalDirectionIsValid =
-    Test.fuzz Fuzz.sketchPlane3d
-        "Sketch plane normal direction is valid and is perpendicular to both basis directions"
+    Test.check1 "Sketch plane normal direction is valid and is perpendicular to both basis directions"
+        Random.sketchPlane3d
         (\sketchPlane ->
             SketchPlane3d.normalDirection sketchPlane
                 |> Expect.all

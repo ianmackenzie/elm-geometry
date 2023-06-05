@@ -7,14 +7,15 @@ import Angle exposing (Angle)
 import Axis2d exposing (Axis2d)
 import Expect
 import Frame2d
-import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (Meters)
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
+import Random exposing (Generator)
 import Rectangle2d exposing (Rectangle2d)
 import Test exposing (Test)
+import Test.Check as Test
 import Vector2d exposing (Vector2d)
 
 
@@ -22,6 +23,7 @@ type alias Transformation coordinates =
     { rectangle : Rectangle2d Meters coordinates -> Rectangle2d Meters coordinates
     , point : Point2d Meters coordinates -> Point2d Meters coordinates
     , lineSegment : LineSegment2d Meters coordinates -> LineSegment2d Meters coordinates
+    , isZeroScale : Bool
     }
 
 
@@ -30,6 +32,7 @@ rotation centerPoint angle =
     { rectangle = Rectangle2d.rotateAround centerPoint angle
     , point = Point2d.rotateAround centerPoint angle
     , lineSegment = LineSegment2d.rotateAround centerPoint angle
+    , isZeroScale = False
     }
 
 
@@ -38,6 +41,7 @@ translation displacement =
     { rectangle = Rectangle2d.translateBy displacement
     , point = Point2d.translateBy displacement
     , lineSegment = LineSegment2d.translateBy displacement
+    , isZeroScale = False
     }
 
 
@@ -46,6 +50,7 @@ scaling centerPoint scale =
     { rectangle = Rectangle2d.scaleAbout centerPoint scale
     , point = Point2d.scaleAbout centerPoint scale
     , lineSegment = LineSegment2d.scaleAbout centerPoint scale
+    , isZeroScale = scale == 0.0
     }
 
 
@@ -54,26 +59,26 @@ mirroring axis =
     { rectangle = Rectangle2d.mirrorAcross axis
     , point = Point2d.mirrorAcross axis
     , lineSegment = LineSegment2d.mirrorAcross axis
+    , isZeroScale = False
     }
 
 
-transformationFuzzer : Fuzzer (Transformation coordinates)
-transformationFuzzer =
-    Fuzz.oneOf
-        [ Fuzz.map2 rotation Fuzz.point2d Fuzz.angle
-        , Fuzz.map translation Fuzz.vector2d
-        , Fuzz.map2 scaling Fuzz.point2d Fuzz.scale
-        , Fuzz.map mirroring Fuzz.axis2d
+transformationGenerator : Generator (Transformation coordinates)
+transformationGenerator =
+    Random.oneOf
+        (Random.map2 rotation Random.point2d Random.angle)
+        [ Random.map translation Random.vector2d
+        , Random.map2 scaling Random.point2d Random.scale
+        , Random.map mirroring Random.axis2d
         ]
 
 
 containmentIsConsistent : Test
 containmentIsConsistent =
-    Test.fuzz3
-        transformationFuzzer
-        Fuzz.rectangle2d
-        Fuzz.point2d
-        "Rectangle/point containment is consistent through transformation"
+    Test.check3 "Rectangle/point containment is consistent through transformation"
+        transformationGenerator
+        Random.rectangle2d
+        Random.point2d
         (\transformation rectangle point ->
             let
                 initialContainment =
@@ -88,7 +93,11 @@ containmentIsConsistent =
                 finalContainment =
                     Rectangle2d.contains transformedPoint transformedRectangle
             in
-            finalContainment |> Expect.equal initialContainment
+            if transformation.isZeroScale then
+                finalContainment |> Expect.equal True
+
+            else
+                finalContainment |> Expect.equal initialContainment
         )
 
 
@@ -96,10 +105,9 @@ verticesAreConsistent : Test
 verticesAreConsistent =
     let
         testVertex description accessor =
-            Test.fuzz2
-                transformationFuzzer
-                Fuzz.rectangle2d
-                description
+            Test.check2 description
+                transformationGenerator
+                Random.rectangle2d
                 (\transformation rectangle ->
                     let
                         vertex =

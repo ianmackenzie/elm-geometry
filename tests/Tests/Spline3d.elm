@@ -304,7 +304,7 @@ consistentWithQuadraticBSpline =
 
 consistentWithQuadraticBSplineIntervals : Test
 consistentWithQuadraticBSplineIntervals =
-    Test.check "Spline3d.bSplineIntervals is consistent with QuadraticSpline3d.bSplineIntervals"
+    Test.check1 "Spline3d.bSplineIntervals is consistent with QuadraticSpline3d.bSplineIntervals"
         (Random.map List.sort (Random.list 12 (Random.float 0 10)))
         (\knots ->
             Spline3d.bSplineIntervals 2 knots
@@ -314,7 +314,7 @@ consistentWithQuadraticBSplineIntervals =
 
 consistentWithCubicBSplineIntervals : Test
 consistentWithCubicBSplineIntervals =
-    Test.check "Spline3d.bSplineIntervals is consistent with CubicSpline3d.bSplineIntervals"
+    Test.check1 "Spline3d.bSplineIntervals is consistent with CubicSpline3d.bSplineIntervals"
         (Random.map List.sort (Random.list 12 (Random.float 0 10)))
         (\knots ->
             Spline3d.bSplineIntervals 3 knots

@@ -10,22 +10,22 @@ import Angle
 import Arc2d exposing (Arc2d)
 import EllipticalArc2d exposing (EllipticalArc2d)
 import Expect
-import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Length exposing (Meters, meters)
 import Point2d
 import Quantity exposing (zero)
+import Random exposing (Generator)
 import SweptAngle
 import Test exposing (Test)
+import Test.Check as Test
 import Tests.Generic.Curve2d
 import Vector2d
 
 
-reproducibleArc : Fuzzer (Arc2d Meters coordinates)
+reproducibleArc : Generator (Arc2d Meters coordinates)
 reproducibleArc =
-    Fuzz.map4
+    Random.map4
         (\centerPoint startDirection radius sweptAngle ->
             let
                 startPoint =
@@ -33,25 +33,24 @@ reproducibleArc =
             in
             startPoint |> Arc2d.sweptAround centerPoint sweptAngle
         )
-        Fuzz.point2d
-        Fuzz.direction2d
-        (Fuzz.map meters (Fuzz.floatRange 0.1 10))
-        (Fuzz.map Angle.degrees <|
-            Fuzz.oneOf
-                [ Fuzz.floatRange 1 179
-                , Fuzz.floatRange 181 359
-                , Fuzz.floatRange -179 -1
-                , Fuzz.floatRange -359 -181
+        Random.point2d
+        Random.direction2d
+        (Random.map meters (Random.float 0.1 10))
+        (Random.map Angle.degrees <|
+            Random.oneOf
+                (Random.float 1 179)
+                [ Random.float 181 359
+                , Random.float -179 -1
+                , Random.float -359 -181
                 ]
         )
 
 
 fromEndpointsReplicatesArc : Test
 fromEndpointsReplicatesArc =
-    Test.fuzz2
+    Test.check2 "fromEndpoints accurately replicates circular arcs"
         reproducibleArc
-        Fuzz.direction2d
-        "fromEndpoints accurately replicates circular arcs"
+        Random.direction2d
         (\arc xDirection ->
             let
                 radius =
@@ -95,8 +94,8 @@ fromEndpointsReplicatesArc =
 
 reverseKeepsMidpoint : Test
 reverseKeepsMidpoint =
-    Test.fuzz Fuzz.ellipticalArc2d
-        "Reversing an elliptical arc keeps the midpoint"
+    Test.check1 "Reversing an elliptical arc keeps the midpoint"
+        Random.ellipticalArc2d
         (\arc ->
             case
                 ( EllipticalArc2d.nondegenerate arc
@@ -150,11 +149,10 @@ genericTests =
 
 signedDistanceAlong : Test
 signedDistanceAlong =
-    Test.fuzz3
-        Fuzz.ellipticalArc2d
-        Fuzz.axis2d
-        (Fuzz.floatRange 0 1)
-        "signedDistanceAlong"
+    Test.check3 "signedDistanceAlong"
+        Random.ellipticalArc2d
+        Random.axis2d
+        Random.parameterValue
         (\arc axis parameterValue ->
             let
                 distanceInterval =

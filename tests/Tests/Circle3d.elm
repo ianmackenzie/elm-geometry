@@ -5,20 +5,21 @@ import BoundingBox3d
 import Circle3d
 import Expect
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Point3d
 import Quantity
 import Test exposing (Test)
+import Test.Check as Test
 import Triangle3d
 
 
 throughPoints : Test
 throughPoints =
     Test.describe "throughPoints"
-        [ Test.fuzz3 Fuzz.point3d
-            Fuzz.point3d
-            Fuzz.point3d
-            "All given points lie on the circle constructed using `throughPoints`"
+        [ Test.check3 "All given points lie on the circle constructed using `throughPoints`"
+            Random.point3d
+            Random.point3d
+            Random.point3d
             (\p1 p2 p3 ->
                 let
                     -- if the first three points are collinear it is not possible to construct a circle
@@ -54,8 +55,8 @@ throughPoints =
 
 boundingBoxContainsCenter : Test
 boundingBoxContainsCenter =
-    Test.fuzz Fuzz.circle3d
-        "A circle's bounding box contains its center point"
+    Test.check1 "A circle's bounding box contains its center point"
+        Random.circle3d
         (\circle ->
             let
                 boundingBox =
@@ -64,7 +65,9 @@ boundingBoxContainsCenter =
                 centerPoint =
                     Circle3d.centerPoint circle
             in
-            Expect.true
-                "Circle bounding box does not contain the center point"
-                (BoundingBox3d.contains centerPoint boundingBox)
+            if BoundingBox3d.contains centerPoint boundingBox then
+                Expect.pass
+
+            else
+                Expect.fail "Circle bounding box does not contain the center point"
         )

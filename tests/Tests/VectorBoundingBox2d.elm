@@ -1,7 +1,6 @@
 module Tests.VectorBoundingBox2d exposing (arithmetic, length)
 
 import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
 import Geometry.Random as Random
 import Length exposing (Meters)
@@ -26,7 +25,7 @@ boxAndContainedVector =
 
 length : Test
 length =
-    Test.check "length" boxAndContainedVector <|
+    Test.check1 "length" boxAndContainedVector <|
         \( box, vector ) ->
             Vector2d.length vector
                 |> Expect.quantityContainedIn (VectorBoundingBox2d.length box)

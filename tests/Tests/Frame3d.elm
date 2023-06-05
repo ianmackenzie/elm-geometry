@@ -3,16 +3,17 @@ module Tests.Frame3d exposing (frameDirectionsAreOrthonormal)
 import Direction3d
 import Frame3d
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Quantity
 import Test exposing (Test)
+import Test.Check as Test
 import Vector3d
 
 
 frameDirectionsAreOrthonormal : Test
 frameDirectionsAreOrthonormal =
-    Test.fuzz Fuzz.frame3d
-        "Frame3d basis directions are orthonormal"
+    Test.check1 "Frame3d basis directions are orthonormal"
+        Random.frame3d
         (\frame ->
             let
                 xDirectionVector =

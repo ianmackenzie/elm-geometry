@@ -7,28 +7,28 @@ import Axis3d exposing (Axis3d)
 import Ellipsoid3d exposing (Ellipsoid3d)
 import Expect
 import Frame3d exposing (Frame3d)
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
-import Length exposing (Meters, meters)
+import Geometry.Random as Random
+import Length exposing (Length, Meters, meters)
 import Point3d exposing (Point3d)
 import Quantity
 import Quantity.Interval as Interval exposing (Interval)
 import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
+import Test.Check as Test
 
 
 
 -- Helper methods
 
 
-ellipsoidAtOriginWithRadii : ( Float, Float, Float ) -> Ellipsoid3d Meters coordinates
+ellipsoidAtOriginWithRadii : ( Length, Length, Length ) -> Ellipsoid3d Meters coordinates
 ellipsoidAtOriginWithRadii ( x, y, z ) =
     Ellipsoid3d.with
         { axes = Frame3d.atOrigin
-        , xRadius = Length.meters x
-        , yRadius = Length.meters y
-        , zRadius = Length.meters z
+        , xRadius = x
+        , yRadius = y
+        , zRadius = z
         }
 
 
@@ -39,11 +39,11 @@ ellipsoidAtOriginWithRadii ( x, y, z ) =
 equivalences : Test
 equivalences =
     Test.describe "Equivalent shapes"
-        [ Test.fuzz Fuzz.float "Ellipsoid with 3 equal radii is equivalent to a sphere" <|
+        [ Test.check1 "Ellipsoid with 3 equal radii is equivalent to a sphere" Random.positiveLength <|
             \radius ->
                 let
                     sphere =
-                        Sphere3d.atOrigin (meters radius)
+                        Sphere3d.atOrigin radius
 
                     ellipsoid =
                         ellipsoidAtOriginWithRadii ( radius, radius, radius )
@@ -56,11 +56,11 @@ equivalences =
 transformations : Test
 transformations =
     Test.describe "Transforming two objects equally maintains their relative properties"
-        [ Test.fuzz2
-            (Fuzz.tuple ( Fuzz.ellipsoid3d, Fuzz.point3d ))
-            Fuzz.vector3d
-            "contains before/after translation"
-            (\( ellipsoid, point ) vector ->
+        [ Test.check3 "contains before/after translation"
+            Random.ellipsoid3d
+            Random.point3d
+            Random.vector3d
+            (\ellipsoid point vector ->
                 let
                     beforeTransformation =
                         Ellipsoid3d.contains point ellipsoid
@@ -72,11 +72,11 @@ transformations =
                 in
                 Expect.equal beforeTransformation afterTransformation
             )
-        , Test.fuzz2
-            (Fuzz.tuple ( Fuzz.ellipsoid3d, Fuzz.point3d ))
-            Fuzz.plane3d
-            "contains before/after mirroring"
-            (\( ellipsoid, point ) plane ->
+        , Test.check3 "contains before/after mirroring"
+            Random.ellipsoid3d
+            Random.point3d
+            Random.plane3d
+            (\ellipsoid point plane ->
                 let
                     beforeTransformation =
                         Ellipsoid3d.contains point ellipsoid
@@ -88,11 +88,12 @@ transformations =
                 in
                 Expect.equal beforeTransformation afterTransformation
             )
-        , Test.fuzz2
-            (Fuzz.tuple ( Fuzz.ellipsoid3d, Fuzz.point3d ))
-            (Fuzz.tuple ( Fuzz.axis3d, Fuzz.angle ))
-            "contains before/after rotating"
-            (\( ellipsoid, point ) ( axis, angle ) ->
+        , Test.check4 "contains before/after rotating"
+            Random.ellipsoid3d
+            Random.point3d
+            Random.axis3d
+            Random.angle
+            (\ellipsoid point axis angle ->
                 let
                     beforeTransformation =
                         Ellipsoid3d.contains point ellipsoid
@@ -104,11 +105,11 @@ transformations =
                 in
                 Expect.equal beforeTransformation afterTransformation
             )
-        , Test.fuzz2
-            (Fuzz.tuple ( Fuzz.ellipsoid3d, Fuzz.axis3d ))
-            Fuzz.vector3d
-            "signedDistanceAlong before/after translation"
-            (\( ellipsoid, axis ) vector ->
+        , Test.check3 "signedDistanceAlong before/after translation"
+            Random.ellipsoid3d
+            Random.axis3d
+            Random.vector3d
+            (\ellipsoid axis vector ->
                 let
                     beforeTransformation =
                         Ellipsoid3d.signedDistanceAlong axis ellipsoid
@@ -124,11 +125,11 @@ transformations =
                         , Interval.maxValue >> Expect.quantity (Interval.maxValue beforeTransformation)
                         ]
             )
-        , Test.fuzz2
-            (Fuzz.tuple ( Fuzz.ellipsoid3d, Fuzz.axis3d ))
-            Fuzz.plane3d
-            "signedDistanceAlong before/after mirroring"
-            (\( ellipsoid, axis ) plane ->
+        , Test.check3 "signedDistanceAlong before/after mirroring"
+            Random.ellipsoid3d
+            Random.axis3d
+            Random.plane3d
+            (\ellipsoid axis plane ->
                 let
                     beforeTransformation =
                         Ellipsoid3d.signedDistanceAlong axis ellipsoid
@@ -144,11 +145,12 @@ transformations =
                         , Interval.maxValue >> Expect.quantity (Interval.maxValue beforeTransformation)
                         ]
             )
-        , Test.fuzz2
-            (Fuzz.tuple ( Fuzz.ellipsoid3d, Fuzz.axis3d ))
-            (Fuzz.tuple ( Fuzz.axis3d, Fuzz.angle ))
-            "signedDistanceAlong before/after rotating"
-            (\( ellipsoid, axis ) ( rotAxis, angle ) ->
+        , Test.check4 "signedDistanceAlong before/after rotating"
+            Random.ellipsoid3d
+            Random.axis3d
+            Random.axis3d
+            Random.angle
+            (\ellipsoid axis rotAxis angle ->
                 let
                     beforeTransformation =
                         Ellipsoid3d.signedDistanceAlong axis ellipsoid

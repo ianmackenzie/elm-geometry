@@ -18,20 +18,21 @@ import Axis3d
 import Direction2d
 import Direction3d
 import Expect
-import Fuzz as ElmFuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
+import Geometry.Random as Random
 import Length exposing (meters)
 import LineSegment3d
 import Plane3d
 import Point2d
 import Point3d
 import Quantity
+import Random
 import Rectangle2d exposing (Rectangle2d)
 import Rectangle3d
 import SketchPlane3d
 import Sphere3d
 import Test exposing (Test)
+import Test.Check as Test
 import Triangle3d
 import Vector3d
 
@@ -112,10 +113,9 @@ onExamples =
 
 intersectionWithPlane : Test
 intersectionWithPlane =
-    Test.fuzz2
-        Fuzz.axis3d
-        Fuzz.plane3d
-        "intersectionWithPlane works properly"
+    Test.check2 "intersectionWithPlane works properly"
+        Random.axis3d
+        Random.plane3d
         (\axis plane ->
             if
                 abs
@@ -142,17 +142,13 @@ intersectionWithPlane =
 
 intersectionWithTriangle : Test
 intersectionWithTriangle =
-    Test.fuzz3
-        Fuzz.triangle3d
-        Fuzz.direction3d
-        (ElmFuzz.tuple3
-            ( ElmFuzz.floatRange -0.5 1.5
-            , ElmFuzz.floatRange -0.5 1.5
-            , ElmFuzz.floatRange -10 10
-            )
-        )
-        "intersectionWithTriangle works properly"
-        (\triangle axisDirection parameters ->
+    Test.check5 "intersectionWithTriangle works properly"
+        Random.triangle3d
+        Random.direction3d
+        (Random.float -0.5 1.5)
+        (Random.float -0.5 1.5)
+        (Random.float -10 10)
+        (\triangle axisDirection u v t ->
             let
                 s =
                     Triangle3d.normalDirection triangle
@@ -172,9 +168,6 @@ intersectionWithTriangle =
 
                     e2 =
                         Vector3d.from p0 p2
-
-                    ( u, v, t ) =
-                        parameters
 
                     planeIntersection =
                         p0
@@ -210,17 +203,13 @@ intersectionWithTriangle =
 
 intersectionWithRectangle : Test
 intersectionWithRectangle =
-    Test.fuzz3
-        Fuzz.rectangle3d
-        Fuzz.direction3d
-        (ElmFuzz.tuple3
-            ( ElmFuzz.floatRange -0.5 1.5
-            , ElmFuzz.floatRange -0.5 1.5
-            , ElmFuzz.floatRange -10 10
-            )
-        )
-        "intersectionWithRectangle works properly"
-        (\rectangle axisDirection parameters ->
+    Test.check5 "intersectionWithRectangle works properly"
+        Random.rectangle3d
+        Random.direction3d
+        (Random.float -0.5 1.5)
+        (Random.float -0.5 1.5)
+        (Random.float -10 10)
+        (\rectangle axisDirection u v t ->
             let
                 s =
                     Rectangle3d.axes rectangle
@@ -232,9 +221,6 @@ intersectionWithRectangle =
 
             else
                 let
-                    ( u, v, t ) =
-                        parameters
-
                     planeIntersection =
                         Rectangle3d.interpolate rectangle u v
 
@@ -300,10 +286,9 @@ intersectionWithSphere =
                 in
                 Expect.equal (Axis3d.intersectionWithSphere sphere axis)
                     (Just ( Point3d.meters 1 0 0, Point3d.meters 1 0 0 ))
-        , Test.fuzz2
-            Fuzz.axis3d
-            Fuzz.sphere3d
-            "intersection points should be on the sphere and the axis"
+        , Test.check2 "intersection points should be on the sphere and the axis"
+            Random.axis3d
+            Random.sphere3d
             (\axis sphere ->
                 case Axis3d.intersectionWithSphere sphere axis of
                     Just pointPair ->
@@ -342,10 +327,9 @@ intersectionWithSphere =
 
 throughPoints : Test
 throughPoints =
-    Test.fuzz2
-        Fuzz.point3d
-        Fuzz.point3d
-        "throughPoints"
+    Test.check2 "throughPoints"
+        Random.point3d
+        Random.point3d
         (\firstPoint secondPoint ->
             case Axis3d.throughPoints firstPoint secondPoint of
                 Just axis ->

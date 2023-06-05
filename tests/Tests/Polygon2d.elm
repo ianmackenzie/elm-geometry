@@ -12,16 +12,17 @@ module Tests.Polygon2d exposing
 
 import Angle
 import Expect
-import Fuzz
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
-import Length exposing (meters)
+import Geometry.Random as Random
+import Length
 import LineSegment2d
 import Point2d
 import Polygon2d
 import Quantity exposing (zero)
+import Random
 import Rectangle2d
 import Test exposing (Test)
+import Test.Check as Test
 import Triangle2d
 import TriangularMesh
 import Vector2d
@@ -40,19 +41,19 @@ areaOfRegularNGon radius sides =
 regularTest : Test
 regularTest =
     Test.describe "regular"
-        [ Test.fuzz3 Fuzz.point2d
-            Fuzz.length
-            (Fuzz.intRange 3 300)
-            "A centroid of a regular polygon is in the center"
+        [ Test.check3 "A centroid of a regular polygon is in the center"
+            Random.point2d
+            Random.length
+            (Random.int 3 300)
           <|
             \center radius sides ->
                 Polygon2d.regular { centerPoint = center, circumradius = radius, numSides = sides }
                     |> Polygon2d.centroid
                     |> Expect.just (Expect.point2d center)
-        , Test.fuzz3 Fuzz.point2d
-            Fuzz.length
-            (Fuzz.intRange 3 300)
-            "The area matches what we would expect from a regular polygon"
+        , Test.check3 "The area matches what we would expect from a regular polygon"
+            Random.point2d
+            Random.length
+            (Random.int 3 300)
           <|
             \center radius sides ->
                 Polygon2d.regular { centerPoint = center, circumradius = radius, numSides = sides }
@@ -60,7 +61,11 @@ regularTest =
                     |> Expect.quantity (areaOfRegularNGon radius (toFloat sides))
         , Test.test "sanity check" <|
             \() ->
-                Polygon2d.regular { centerPoint = Point2d.meters 0.5 0.5, circumradius = meters (sqrt 2 / 2), numSides = 4 }
+                Polygon2d.regular
+                    { centerPoint = Point2d.meters 0.5 0.5
+                    , circumradius = Length.meters (sqrt 2 / 2)
+                    , numSides = 4
+                    }
                     |> Expect.polygon2d
                         (Polygon2d.singleLoop
                             [ Point2d.meters 1 0
@@ -74,8 +79,8 @@ regularTest =
 
 convexHullIsConvex : Test
 convexHullIsConvex =
-    Test.fuzz (Fuzz.list Fuzz.point2d)
-        "The convex hull of a list of points is actually convex"
+    Test.check1 "The convex hull of a list of points is actually convex"
+        (Random.smallList Random.point2d)
         (\points ->
             let
                 convexHull =
@@ -98,15 +103,18 @@ convexHullIsConvex =
                                 (first :: rest)
                                 (rest ++ [ first ])
                     in
-                    Expect.true "Edges should always turn counterclockwise" <|
-                        List.all (Quantity.greaterThanOrEqualTo zero) crossProducts
+                    if List.all (Quantity.greaterThanOrEqualTo zero) crossProducts then
+                        Expect.pass
+
+                    else
+                        Expect.fail "Edges should always turn counterclockwise"
         )
 
 
 convexHullContainsAllPoints : Test
 convexHullContainsAllPoints =
-    Test.fuzz (Fuzz.list Fuzz.point2d)
-        "The convex hull of a list of points contains all of those points"
+    Test.check1 "The convex hull of a list of points contains all of those points"
+        (Random.smallList Random.point2d)
         (\points ->
             let
                 convexHull =
@@ -129,32 +137,35 @@ convexHullContainsAllPoints =
                 isContained point =
                     List.all (\edge -> isNonNegativeArea point edge) edges
             in
-            Expect.true "Convex hull should contain all points" <|
-                List.all isContained points
+            if List.all isContained points then
+                Expect.pass
+
+            else
+                Expect.fail "Convex hull should contain all points"
         )
 
 
 simplePolygon =
     Polygon2d.singleLoop
-        [ Point2d.fromTuple meters ( 1, 1 )
-        , Point2d.fromTuple meters ( 3, 1 )
-        , Point2d.fromTuple meters ( 3, 2 )
-        , Point2d.fromTuple meters ( 1, 2 )
+        [ Point2d.meters 1 1
+        , Point2d.meters 3 1
+        , Point2d.meters 3 2
+        , Point2d.meters 1 2
         ]
 
 
 withHole =
     Polygon2d.withHoles
-        [ [ Point2d.fromTuple meters ( 1, 1 )
-          , Point2d.fromTuple meters ( 1, 2 )
-          , Point2d.fromTuple meters ( 2, 2 )
-          , Point2d.fromTuple meters ( 2, 1 )
+        [ [ Point2d.meters 1 1
+          , Point2d.meters 1 2
+          , Point2d.meters 2 2
+          , Point2d.meters 2 1
           ]
         ]
-        [ Point2d.fromTuple meters ( 0, 0 )
-        , Point2d.fromTuple meters ( 3, 0 )
-        , Point2d.fromTuple meters ( 3, 3 )
-        , Point2d.fromTuple meters ( 0, 3 )
+        [ Point2d.meters 0 0
+        , Point2d.meters 3 0
+        , Point2d.meters 3 3
+        , Point2d.meters 0 3
         ]
 
 
@@ -164,40 +175,40 @@ containsTest =
         [ Test.test "inside" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.contains (Point2d.fromTuple meters ( 2, 1.5 ))
+                    |> Polygon2d.contains (Point2d.meters 2 1.5)
                     |> Expect.equal True
         , Test.test "boundary" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.contains (Point2d.fromTuple meters ( 3, 1.5 ))
+                    |> Polygon2d.contains (Point2d.meters 3 1.5)
                     |> Expect.equal True
         , Test.test "outside" <|
             \() ->
                 simplePolygon
-                    |> Polygon2d.contains (Point2d.fromTuple meters ( 4, 1.5 ))
+                    |> Polygon2d.contains (Point2d.meters 4 1.5)
                     |> Expect.equal False
         , Test.test "inside with hole" <|
             \() ->
                 withHole
-                    |> Polygon2d.contains (Point2d.fromTuple meters ( 2, 2.5 ))
+                    |> Polygon2d.contains (Point2d.meters 2 2.5)
                     |> Expect.equal True
         , Test.test "boundary of hole" <|
             \() ->
                 withHole
-                    |> Polygon2d.contains (Point2d.fromTuple meters ( 2, 2 ))
+                    |> Polygon2d.contains (Point2d.meters 2 2)
                     |> Expect.equal True
         , Test.test "outside (in the hole)" <|
             \() ->
                 withHole
-                    |> Polygon2d.contains (Point2d.fromTuple meters ( 1.5, 1.5 ))
+                    |> Polygon2d.contains (Point2d.meters 1.5 1.5)
                     |> Expect.equal False
         ]
 
 
 triangulationHasCorrectArea : Test
 triangulationHasCorrectArea =
-    Test.fuzz Fuzz.polygon2d
-        "The triangulation of a polygon has the same area as the polygon itself"
+    Test.check1 "The triangulation of a polygon has the same area as the polygon itself"
+        Random.polygon2d
         (\polygon ->
             let
                 polygonArea =
@@ -217,8 +228,8 @@ triangulationHasCorrectArea =
 
 triangulationHasCorrectNumberOfTriangles : Test
 triangulationHasCorrectNumberOfTriangles =
-    Test.fuzz Fuzz.polygon2d
-        "The triangulation of a polygon with n vertices and h holes has n + 2h - 2 triangles"
+    Test.check1 "The triangulation of a polygon with n vertices and h holes has n + 2h - 2 triangles"
+        Random.polygon2d
         (\polygon ->
             let
                 innerLoops =
@@ -244,8 +255,8 @@ triangulationHasCorrectNumberOfTriangles =
 
 triangulationHasCorrectWeightedCentroid : Test
 triangulationHasCorrectWeightedCentroid =
-    Test.fuzz Fuzz.polygon2d
-        "The centroid of the polygon before triangulation is the same as weighted centroid of all the resulting triangles"
+    Test.check1 "The centroid of the polygon before triangulation is the same as weighted centroid of all the resulting triangles"
+        Random.polygon2d
         (\polygon ->
             let
                 triangles =
@@ -278,9 +289,9 @@ triangulationHasCorrectWeightedCentroid =
 
 rotatingAroundCentroidKeepsCentroid : Test
 rotatingAroundCentroidKeepsCentroid =
-    Test.fuzz2 Fuzz.polygon2d
-        Fuzz.angle
-        "Rotating a polygon around its centroid keeps the centroid point"
+    Test.check2 "Rotating a polygon around its centroid keeps the centroid point"
+        Random.polygon2d
+        Random.angle
         (\polygon angle ->
             case Polygon2d.centroid polygon of
                 Just centroid ->
@@ -302,8 +313,8 @@ rotatingAroundCentroidKeepsCentroid =
 
 rectangleCentroidIsInTheCenter : Test
 rectangleCentroidIsInTheCenter =
-    Test.fuzz Fuzz.rectangle2d
-        "The centroid of rectangle is in the center point"
+    Test.check1 "The centroid of rectangle is in the center point"
+        Random.rectangle2d
         (\rectangle ->
             case
                 rectangle

@@ -10,9 +10,7 @@ module Tests.QuadraticSpline3d exposing
 
 import Angle exposing (degrees, radians)
 import Expect exposing (FloatingPointTolerance(..))
-import Fuzz exposing (Fuzzer)
 import Geometry.Expect as Expect
-import Geometry.Fuzz as Fuzz
 import Geometry.Random as Random
 import Geometry.Types exposing (QuadraticSpline3d)
 import Length exposing (Length, Meters, inMeters, meters)
@@ -20,7 +18,9 @@ import Point3d
 import QuadraticSpline2d exposing (QuadraticSpline2d)
 import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (zero)
+import Random exposing (Generator)
 import Test exposing (Test)
+import Test.Check as Test
 import Tests.Generic.Curve3d
 import Tests.QuadraticSpline2d
 
@@ -115,17 +115,17 @@ analyticalLength spline =
     meters ((a_32 * s_abc + a_2 * b * (s_abc - c_2) + (4 * c * a - b * b) * logBase e ((2 * a_2 + ba + s_abc) / (ba + c_2))) / (4 * a_32))
 
 
-curvedSpline : Fuzzer (QuadraticSpline3d Meters coordinates)
+curvedSpline : Generator (QuadraticSpline3d Meters coordinates)
 curvedSpline =
-    Fuzz.map2 QuadraticSpline3d.on
-        Fuzz.sketchPlane3d
+    Random.map2 QuadraticSpline3d.on
+        Random.sketchPlane3d
         Tests.QuadraticSpline2d.curvedSpline
 
 
 arcLengthMatchesAnalytical : Test
 arcLengthMatchesAnalytical =
-    Test.fuzz curvedSpline
-        "arc length matches analytical formula"
+    Test.check1 "arc length matches analytical formula"
+        curvedSpline
         (\spline ->
             let
                 tolerance =
@@ -148,8 +148,8 @@ arcLengthMatchesAnalytical =
 
 pointAtZeroLengthIsStart : Test
 pointAtZeroLengthIsStart =
-    Test.fuzz Fuzz.quadraticSpline3d
-        "point along spline at zero length is start point"
+    Test.check1 "point along spline at zero length is start point"
+        Random.quadraticSpline3d
         (\spline ->
             case QuadraticSpline3d.nondegenerate spline of
                 Ok nondegenerateSpline ->
@@ -169,8 +169,8 @@ pointAtZeroLengthIsStart =
 
 pointAtArcLengthIsEnd : Test
 pointAtArcLengthIsEnd =
-    Test.fuzz Fuzz.quadraticSpline3d
-        "point along spline at arc length is end point"
+    Test.check1 "point along spline at arc length is end point"
+        Random.quadraticSpline3d
         (\spline ->
             case QuadraticSpline3d.nondegenerate spline of
                 Ok nondegenerateSpline ->
@@ -193,8 +193,8 @@ pointAtArcLengthIsEnd =
 
 bSplineReproducesSpline : Test
 bSplineReproducesSpline =
-    Test.fuzz Fuzz.quadraticSpline3d
-        "Can reconstruct a quadratic spline with a B-spline with repeated knots"
+    Test.check1 "Can reconstruct a quadratic spline with a B-spline with repeated knots"
+        Random.quadraticSpline3d
         (\spline ->
             let
                 p1 =
