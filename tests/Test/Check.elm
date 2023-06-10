@@ -7,6 +7,7 @@ module Test.Check exposing
     , check6
     , check7
     , check8
+    , checkExpectation
     )
 
 import Expect exposing (Expectation)
@@ -15,28 +16,27 @@ import Random exposing (Generator)
 import Test exposing (Test)
 
 
-checkImpl : String -> Generator Expectation -> Test
-checkImpl description generator =
+checkExpectation : String -> Generator Expectation -> Test
+checkExpectation description generator =
     Test.fuzz (Fuzz.fromGenerator generator) description identity
 
 
 check : String -> Generator a -> (a -> Expectation) -> Test
 check description generator expectation =
-    checkImpl description (Random.map expectation generator)
+    checkExpectation description (Random.map expectation generator)
 
 
 check2 : String -> Generator a -> Generator b -> (a -> b -> Expectation) -> Test
 check2 description firstGenerator secondGenerator expectation =
-    checkImpl description <|
-        Random.map2
-            expectation
+    checkExpectation description <|
+        Random.map2 expectation
             firstGenerator
             secondGenerator
 
 
 check3 : String -> Generator a -> Generator b -> Generator c -> (a -> b -> c -> Expectation) -> Test
 check3 description firstGenerator secondGenerator thirdGenerator expectation =
-    checkImpl description <|
+    checkExpectation description <|
         Random.map3 expectation
             firstGenerator
             secondGenerator
@@ -52,7 +52,7 @@ check4 :
     -> (a -> b -> c -> d -> Expectation)
     -> Test
 check4 description firstGenerator secondGenerator thirdGenerator fourthGenerator expectation =
-    checkImpl description <|
+    checkExpectation description <|
         Random.map4 expectation
             firstGenerator
             secondGenerator
@@ -70,7 +70,7 @@ check5 :
     -> (a -> b -> c -> d -> e -> Expectation)
     -> Test
 check5 description firstGenerator secondGenerator thirdGenerator fourthGenerator fifthGenerator expectation =
-    checkImpl description <|
+    checkExpectation description <|
         Random.map5 expectation
             firstGenerator
             secondGenerator
@@ -95,7 +95,7 @@ check6 :
     -> (a -> b -> c -> d -> e -> f -> Expectation)
     -> Test
 check6 description firstGenerator secondGenerator thirdGenerator fourthGenerator fifthGenerator sixthGenerator expectation =
-    checkImpl description
+    checkExpectation description
         (Random.constant expectation
             |> andMap firstGenerator
             |> andMap secondGenerator
@@ -118,7 +118,7 @@ check7 :
     -> (a -> b -> c -> d -> e -> f -> g -> Expectation)
     -> Test
 check7 description firstGenerator secondGenerator thirdGenerator fourthGenerator fifthGenerator sixthGenerator seventhGenerator expectation =
-    checkImpl description
+    checkExpectation description
         (Random.constant expectation
             |> andMap firstGenerator
             |> andMap secondGenerator
@@ -143,7 +143,7 @@ check8 :
     -> (a -> b -> c -> d -> e -> f -> g -> h -> Expectation)
     -> Test
 check8 description firstGenerator secondGenerator thirdGenerator fourthGenerator fifthGenerator sixthGenerator seventhGenerator eigthGenerator expectation =
-    checkImpl description
+    checkExpectation description
         (Random.constant expectation
             |> andMap firstGenerator
             |> andMap secondGenerator
