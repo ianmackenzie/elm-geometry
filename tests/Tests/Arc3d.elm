@@ -22,28 +22,28 @@ import Tests.Generic.Curve3d
 
 evaluateZeroIsStartPoint : Test
 evaluateZeroIsStartPoint =
-    Test.check1 "Evaluating at t=0 returns start point"
+    Test.check "Evaluating at t=0 returns start point"
         Random.arc3d
         (\arc -> Arc3d.pointOn arc 0 |> Expect.point3d (Arc3d.startPoint arc))
 
 
 evaluateOneIsEndPoint : Test
 evaluateOneIsEndPoint =
-    Test.check1 "Evaluating at t=1 returns end point"
+    Test.check "Evaluating at t=1 returns end point"
         Random.arc3d
         (\arc -> Arc3d.pointOn arc 1 |> Expect.point3d (Arc3d.endPoint arc))
 
 
 evaluateHalfIsMidpoint : Test
 evaluateHalfIsMidpoint =
-    Test.check1 "Evaluating at t=0.5 returns midpoint"
+    Test.check "Evaluating at t=0.5 returns midpoint"
         Random.arc3d
         (\arc -> Arc3d.pointOn arc 0.5 |> Expect.point3d (Arc3d.midpoint arc))
 
 
 reverseKeepsMidpoint : Test
 reverseKeepsMidpoint =
-    Test.check1 "Reversing an arc keeps the midpoint"
+    Test.check "Reversing an arc keeps the midpoint"
         Random.arc3d
         (\arc ->
             Arc3d.midpoint (Arc3d.reverse arc)

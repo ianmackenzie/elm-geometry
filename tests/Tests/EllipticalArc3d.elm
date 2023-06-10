@@ -19,14 +19,14 @@ import Tests.Generic.Curve3d
 
 evaluateZeroIsStartPoint : Test
 evaluateZeroIsStartPoint =
-    Test.check1 "Evaluating at t=0 returns start point"
+    Test.check "Evaluating at t=0 returns start point"
         Random.ellipticalArc3d
         (\arc -> EllipticalArc3d.pointOn arc 0 |> Expect.point3d (EllipticalArc3d.startPoint arc))
 
 
 evaluateOneIsEndPoint : Test
 evaluateOneIsEndPoint =
-    Test.check1 "Evaluating at t=1 returns end point"
+    Test.check "Evaluating at t=1 returns end point"
         Random.ellipticalArc3d
         (\arc -> EllipticalArc3d.pointOn arc 1 |> Expect.point3d (EllipticalArc3d.endPoint arc))
 

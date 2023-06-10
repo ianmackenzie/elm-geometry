@@ -80,7 +80,7 @@ centroidOfSingleSegmentIsSameAsMidpoint =
 
 centroidOfRightAngle : Test
 centroidOfRightAngle =
-    Test.check1 "Centroid of a right angle is between the two sides" (Random.float -10 10) <|
+    Test.check "Centroid of a right angle is between the two sides" (Random.float -10 10) <|
         \armLength ->
             let
                 angle =
@@ -99,7 +99,7 @@ centroidOfRightAngle =
 
 centroidOfStepShape : Test
 centroidOfStepShape =
-    Test.check1 "Centroid of a step shape is halfway up the step" (Random.float -10 10) <|
+    Test.check "Centroid of a step shape is halfway up the step" (Random.float -10 10) <|
         \armLength ->
             let
                 angle =
@@ -119,7 +119,7 @@ centroidOfStepShape =
 
 centroidOfOpenSquare : Test
 centroidOfOpenSquare =
-    Test.check1 "Centroid of an open square is skewed to closed side" (Random.float -10 10) <|
+    Test.check "Centroid of an open square is skewed to closed side" (Random.float -10 10) <|
         \sideLength ->
             let
                 squareline =
@@ -139,7 +139,7 @@ centroidOfOpenSquare =
 
 centroidOfClosedSquare : Test
 centroidOfClosedSquare =
-    Test.check1 "Centroid of a closed square is mid-point" (Random.float -10 10) <|
+    Test.check "Centroid of a closed square is mid-point" (Random.float -10 10) <|
         \sideLength ->
             let
                 squareline =

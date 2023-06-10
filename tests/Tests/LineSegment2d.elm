@@ -259,7 +259,7 @@ intersectionFindsCollinearCoincidentEndpoints =
 
 intersectionOfEqualPointSegmentIsPoint : Test
 intersectionOfEqualPointSegmentIsPoint =
-    Test.check1 "Intersection of trivial segment (a point) with itself is the point."
+    Test.check "Intersection of trivial segment (a point) with itself is the point."
         Random.point2d
         (\point ->
             let
@@ -273,7 +273,7 @@ intersectionOfEqualPointSegmentIsPoint =
 
 intersectionOfEqualLineSegmentsIsNothing : Test
 intersectionOfEqualLineSegmentsIsNothing =
-    Test.check1 "Intersection of two identical non degenerate line segments is Nothing"
+    Test.check "Intersection of two identical non degenerate line segments is Nothing"
         Random.lineSegment2d
         (\lineSegment ->
             let
@@ -291,7 +291,7 @@ intersectionOfEqualLineSegmentsIsNothing =
 
 intersectionOfReversedEqualLineSegmentsIsNothing : Test
 intersectionOfReversedEqualLineSegmentsIsNothing =
-    Test.check1 "Intersection of two reverse identical non degenerate line segments is Nothing"
+    Test.check "Intersection of two reverse identical non degenerate line segments is Nothing"
         Random.lineSegment2d
         (\lineSegment ->
             let

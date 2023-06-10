@@ -64,7 +64,7 @@ cellForEveryInputVertex =
                                 |> List.length
                                 |> Expect.equal (Array.length points)
     in
-    Test.check1 description uniquePoints expectation
+    Test.check description uniquePoints expectation
 
 
 failsOnCoincidentVertices : Test
@@ -87,7 +87,7 @@ failsOnCoincidentVertices =
                         |> Expect.err
     in
     -- use normal `Random.smallList`, more duplicates don't matter here
-    Test.check1 description (Random.smallList Random.point2d) expectation
+    Test.check description (Random.smallList Random.point2d) expectation
 
 
 

@@ -79,7 +79,7 @@ regularTest =
 
 convexHullIsConvex : Test
 convexHullIsConvex =
-    Test.check1 "The convex hull of a list of points is actually convex"
+    Test.check "The convex hull of a list of points is actually convex"
         (Random.smallList Random.point2d)
         (\points ->
             let
@@ -113,7 +113,7 @@ convexHullIsConvex =
 
 convexHullContainsAllPoints : Test
 convexHullContainsAllPoints =
-    Test.check1 "The convex hull of a list of points contains all of those points"
+    Test.check "The convex hull of a list of points contains all of those points"
         (Random.smallList Random.point2d)
         (\points ->
             let
@@ -207,7 +207,7 @@ containsTest =
 
 triangulationHasCorrectArea : Test
 triangulationHasCorrectArea =
-    Test.check1 "The triangulation of a polygon has the same area as the polygon itself"
+    Test.check "The triangulation of a polygon has the same area as the polygon itself"
         Random.polygon2d
         (\polygon ->
             let
@@ -228,7 +228,7 @@ triangulationHasCorrectArea =
 
 triangulationHasCorrectNumberOfTriangles : Test
 triangulationHasCorrectNumberOfTriangles =
-    Test.check1 "The triangulation of a polygon with n vertices and h holes has n + 2h - 2 triangles"
+    Test.check "The triangulation of a polygon with n vertices and h holes has n + 2h - 2 triangles"
         Random.polygon2d
         (\polygon ->
             let
@@ -255,7 +255,7 @@ triangulationHasCorrectNumberOfTriangles =
 
 triangulationHasCorrectWeightedCentroid : Test
 triangulationHasCorrectWeightedCentroid =
-    Test.check1 "The centroid of the polygon before triangulation is the same as weighted centroid of all the resulting triangles"
+    Test.check "The centroid of the polygon before triangulation is the same as weighted centroid of all the resulting triangles"
         Random.polygon2d
         (\polygon ->
             let
@@ -313,7 +313,7 @@ rotatingAroundCentroidKeepsCentroid =
 
 rectangleCentroidIsInTheCenter : Test
 rectangleCentroidIsInTheCenter =
-    Test.check1 "The centroid of rectangle is in the center point"
+    Test.check "The centroid of rectangle is in the center point"
         Random.rectangle2d
         (\rectangle ->
             case

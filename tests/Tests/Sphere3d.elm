@@ -234,7 +234,7 @@ throughPointsCheck =
 
 properties : Test
 properties =
-    Test.check1 "A sphere has the correct properties (diameter, circumference, surfaceArea, volume)"
+    Test.check "A sphere has the correct properties (diameter, circumference, surfaceArea, volume)"
         Random.sphere3d
         (\sphere ->
             let
@@ -472,7 +472,7 @@ translateBy =
                     |> Vector3d.from (Sphere3d.centerPoint sphere)
                     |> Expect.vector3d vector
             )
-        , Test.check1 "translating by the zero vector doesn't change the sphere"
+        , Test.check "translating by the zero vector doesn't change the sphere"
             Random.sphere3d
             (\sphere ->
                 sphere
@@ -543,7 +543,7 @@ mirrorAcross =
 
 boundingBoxContainsCenter : Test
 boundingBoxContainsCenter =
-    Test.check1 "A sphere's bounding box contains its center point"
+    Test.check "A sphere's bounding box contains its center point"
         Random.sphere3d
         (\sphere ->
             let

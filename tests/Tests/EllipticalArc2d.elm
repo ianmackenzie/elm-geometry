@@ -94,7 +94,7 @@ fromEndpointsReplicatesArc =
 
 reverseKeepsMidpoint : Test
 reverseKeepsMidpoint =
-    Test.check1 "Reversing an elliptical arc keeps the midpoint"
+    Test.check "Reversing an elliptical arc keeps the midpoint"
         Random.ellipticalArc2d
         (\arc ->
             case

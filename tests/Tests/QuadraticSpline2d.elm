@@ -181,7 +181,7 @@ parameterization =
             \_ ->
                 QuadraticSpline2d.pointAlong parameterizedExample zero
                     |> Expect.point2d (Point2d.meters 1 1)
-        , Test.check1 "at s = 0 the arcLengthParameterized curve gives the starting point" Random.quadraticSpline2d <|
+        , Test.check "at s = 0 the arcLengthParameterized curve gives the starting point" Random.quadraticSpline2d <|
             \spline ->
                 case QuadraticSpline2d.nondegenerate spline of
                     Ok nondegenerateSpline ->
@@ -199,7 +199,7 @@ parameterization =
 
                     Err _ ->
                         Expect.pass
-        , Test.check1 "at s = (length spline) the arcLengthParameterized curve gives the end point" Random.quadraticSpline2d <|
+        , Test.check "at s = (length spline) the arcLengthParameterized curve gives the end point" Random.quadraticSpline2d <|
             \spline ->
                 case QuadraticSpline2d.nondegenerate spline of
                     Ok nondegenerateSpline ->
@@ -218,7 +218,7 @@ parameterization =
 
                     Err _ ->
                         Expect.pass
-        , Test.check1 "at s = (length spline) toParameterValue gives 1" Random.quadraticSpline2d <|
+        , Test.check "at s = (length spline) toParameterValue gives 1" Random.quadraticSpline2d <|
             \spline ->
                 case QuadraticSpline2d.nondegenerate spline of
                     Ok nondegenerateSpline ->
@@ -244,7 +244,7 @@ parameterization =
 
                     Err _ ->
                         Expect.pass
-        , Test.check1 "arc length matches analytical formula" curvedSpline <|
+        , Test.check "arc length matches analytical formula" curvedSpline <|
             -- analyticalLength falls down for degenerate splines so just check
             -- curved ones
             \spline ->
@@ -297,7 +297,7 @@ parameterization =
 
 bSplineReproducesSpline : Test
 bSplineReproducesSpline =
-    Test.check1 "Can reconstruct a quadratic spline with a B-spline with repeated knots"
+    Test.check "Can reconstruct a quadratic spline with a B-spline with repeated knots"
         Random.quadraticSpline2d
         (\spline ->
             let

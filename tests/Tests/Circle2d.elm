@@ -12,7 +12,7 @@ import Test.Check as Test
 
 boundingBoxContainsCenter : Test
 boundingBoxContainsCenter =
-    Test.check1 "A circle's bounding box contains its center point"
+    Test.check "A circle's bounding box contains its center point"
         Random.circle2d
         (\circle ->
             let

@@ -55,7 +55,7 @@ throughPoints =
 
 boundingBoxContainsCenter : Test
 boundingBoxContainsCenter =
-    Test.check1 "A circle's bounding box contains its center point"
+    Test.check "A circle's bounding box contains its center point"
         Random.circle3d
         (\circle ->
             let

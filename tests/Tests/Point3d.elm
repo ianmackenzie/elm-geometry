@@ -94,7 +94,7 @@ midpointIsEquidistant =
 
 interpolationReturnsExactEndpoints : Test
 interpolationReturnsExactEndpoints =
-    Test.check1 "Interpolation returns exact start point for t=0 and exact end point for t=1"
+    Test.check "Interpolation returns exact start point for t=0 and exact end point for t=1"
         (Random.pair Random.point3d Random.point3d)
         (Expect.all
             [ \( p1, p2 ) -> Point3d.interpolateFrom p1 p2 0 |> Expect.equal p1
@@ -306,7 +306,7 @@ third ( _, _, z ) =
 
 coordinates : Test
 coordinates =
-    Test.check1 "coordinates and xCoordinate etc. are consistent" Random.point3d <|
+    Test.check "coordinates and xCoordinate etc. are consistent" Random.point3d <|
         \point ->
             Expect.all
                 [ first >> Expect.quantity (Point3d.xCoordinate point)

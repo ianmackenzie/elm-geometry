@@ -39,7 +39,7 @@ ellipsoidAtOriginWithRadii ( x, y, z ) =
 equivalences : Test
 equivalences =
     Test.describe "Equivalent shapes"
-        [ Test.check1 "Ellipsoid with 3 equal radii is equivalent to a sphere" Random.positiveLength <|
+        [ Test.check "Ellipsoid with 3 equal radii is equivalent to a sphere" Random.positiveLength <|
             \radius ->
                 let
                     sphere =

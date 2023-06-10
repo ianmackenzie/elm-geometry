@@ -87,7 +87,7 @@ midpointIsEquidistant =
 
 interpolationReturnsExactEndpoints : Test
 interpolationReturnsExactEndpoints =
-    Test.check1 "Interpolation returns exact start point for t=0 and exact end point for t=1"
+    Test.check "Interpolation returns exact start point for t=0 and exact end point for t=1"
         (Random.pair Random.point2d Random.point2d)
         (Expect.all
             [ \( p1, p2 ) -> Point2d.interpolateFrom p1 p2 0 |> Expect.equal p1
@@ -160,7 +160,7 @@ trickyCircumcenter =
 
 consistentTupleInterop : Test
 consistentTupleInterop =
-    Test.check1 "toTuple and then fromTuple return the same point" Random.point2d <|
+    Test.check "toTuple and then fromTuple return the same point" Random.point2d <|
         \point ->
             Point2d.toTuple Length.inMeters point
                 |> Point2d.fromTuple Length.meters
@@ -169,7 +169,7 @@ consistentTupleInterop =
 
 consistentRecordInterop : Test
 consistentRecordInterop =
-    Test.check1 "toRecord and then fromRecord return the same point" Random.point2d <|
+    Test.check "toRecord and then fromRecord return the same point" Random.point2d <|
         \point ->
             Point2d.toRecord Length.inInches point
                 |> Point2d.fromRecord Length.inches
@@ -178,7 +178,7 @@ consistentRecordInterop =
 
 coordinates : Test
 coordinates =
-    Test.check1 "coordinates and xCoordinate/yCoordinate are consistent" Random.point2d <|
+    Test.check "coordinates and xCoordinate/yCoordinate are consistent" Random.point2d <|
         \point ->
             Expect.all
                 [ Tuple.first >> Expect.quantity (Point2d.xCoordinate point)

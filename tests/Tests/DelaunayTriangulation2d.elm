@@ -59,7 +59,7 @@ allDelaunayTrianglesHaveNonzeroArea =
                         x :: xs ->
                             Expect.fail ("DelaunayTriangulation2d produced a triangle with negative or zero area: " ++ Debug.toString x)
     in
-    Test.check1 description uniquePoints expectation
+    Test.check description uniquePoints expectation
 
 
 delaunayTriangleContainsOnlyItsVertices : Test
@@ -115,7 +115,7 @@ delaunayTriangleContainsOnlyItsVertices =
                 Ok triangulation ->
                     checkAll (DelaunayTriangulation2d.triangles triangulation)
     in
-    Test.check1 description uniquePoints expectation
+    Test.check description uniquePoints expectation
 
 
 failsOnCoincidentVertices : Test
@@ -137,4 +137,4 @@ failsOnCoincidentVertices =
                     DelaunayTriangulation2d.fromPoints pointsWithDuplicate
                         |> Expect.err
     in
-    Test.check1 description (Random.smallList Random.point2d) expectation
+    Test.check description (Random.smallList Random.point2d) expectation

@@ -12,7 +12,7 @@ import Vector3d
 
 sum : Test
 sum =
-    Test.check1 "sum is consistent with plus" (Random.smallList Random.vector3d) <|
+    Test.check "sum is consistent with plus" (Random.smallList Random.vector3d) <|
         \vectors ->
             Vector3d.sum vectors
                 |> Expect.vector3d
@@ -22,7 +22,7 @@ sum =
 vectorScaling : Test
 vectorScaling =
     Test.describe "scaling 3d vectors"
-        [ Test.check1 "scaling a zero vector results in a zero vector" Random.length <|
+        [ Test.check "scaling a zero vector results in a zero vector" Random.length <|
             \len ->
                 Expect.equal Vector3d.zero (Vector3d.scaleTo len Vector3d.zero)
         , Test.check2 "scaleTo has a consistent length" Random.length Random.vector3d <|
@@ -35,7 +35,7 @@ vectorScaling =
                     Vector3d.scaleTo scale vector
                         |> Vector3d.length
                         |> Expect.quantity (Quantity.abs scale)
-        , Test.check1 "normalize has a consistent length" Random.vector3d <|
+        , Test.check "normalize has a consistent length" Random.vector3d <|
             \vector ->
                 if vector == Vector3d.zero then
                     Vector3d.normalize vector
@@ -50,7 +50,7 @@ vectorScaling =
 
 perpendicularTo : Test
 perpendicularTo =
-    Test.check1 "perpendicularTo works properly" Random.vector3d <|
+    Test.check "perpendicularTo works properly" Random.vector3d <|
         \vector ->
             Vector3d.perpendicularTo vector
                 |> Vector3d.dot vector

@@ -72,7 +72,7 @@ angleFromAndRotateByAreConsistent =
 
 orthonormalizeProducesValidFrameBasis : Test
 orthonormalizeProducesValidFrameBasis =
-    Test.check1 "orthonormalize produces a valid frame basis"
+    Test.check "orthonormalize produces a valid frame basis"
         (Random.pair Random.vector2d Random.vector2d)
         (\( xVector, yVector ) ->
             case Direction2d.orthonormalize xVector yVector of
@@ -111,7 +111,7 @@ orthonormalizingParallelVectorsReturnsNothing =
 
 perpendicularToIsConsistentWithRotateBy : Test
 perpendicularToIsConsistentWithRotateBy =
-    Test.check1 "perpendicularTo is consistent with rotateBy"
+    Test.check "perpendicularTo is consistent with rotateBy"
         Random.direction2d
         (\direction ->
             Direction2d.perpendicularTo direction
@@ -122,7 +122,7 @@ perpendicularToIsConsistentWithRotateBy =
 
 rotateClockwiseIsConsistentWithRotateBy : Test
 rotateClockwiseIsConsistentWithRotateBy =
-    Test.check1 "rotateClockwise is consistent with rotateBy"
+    Test.check "rotateClockwise is consistent with rotateBy"
         Random.direction2d
         (\direction ->
             Direction2d.rotateClockwise direction
@@ -133,7 +133,7 @@ rotateClockwiseIsConsistentWithRotateBy =
 
 rotateCounterclockwiseIsConsistentWithRotateBy : Test
 rotateCounterclockwiseIsConsistentWithRotateBy =
-    Test.check1 "rotateCounterclockwise is consistent with rotateBy"
+    Test.check "rotateCounterclockwise is consistent with rotateBy"
         Random.direction2d
         (\direction ->
             Direction2d.rotateCounterclockwise direction
@@ -144,7 +144,7 @@ rotateCounterclockwiseIsConsistentWithRotateBy =
 
 fromAngleIsConsistentWithAngleFrom : Test
 fromAngleIsConsistentWithAngleFrom =
-    Test.check1 "fromAngle is consistent with angleFrom"
+    Test.check "fromAngle is consistent with angleFrom"
         Random.direction2d
         (\direction ->
             Direction2d.angleFrom Direction2d.x direction
@@ -155,7 +155,7 @@ fromAngleIsConsistentWithAngleFrom =
 
 fromAngleIsConsistentWithToAngle : Test
 fromAngleIsConsistentWithToAngle =
-    Test.check1 "fromAngle is consistent with toAngle"
+    Test.check "fromAngle is consistent with toAngle"
         Random.direction2d
         (\direction ->
             Direction2d.toAngle direction
@@ -166,7 +166,7 @@ fromAngleIsConsistentWithToAngle =
 
 xComponentIsConsistentWithComponentIn : Test
 xComponentIsConsistentWithComponentIn =
-    Test.check1 "xComponent is consistent with componentIn"
+    Test.check "xComponent is consistent with componentIn"
         Random.direction2d
         (\direction ->
             Direction2d.xComponent direction
@@ -177,7 +177,7 @@ xComponentIsConsistentWithComponentIn =
 
 yComponentIsConsistentWithComponentIn : Test
 yComponentIsConsistentWithComponentIn =
-    Test.check1 "yComponent is consistent with componentIn"
+    Test.check "yComponent is consistent with componentIn"
         Random.direction2d
         (\direction ->
             Direction2d.yComponent direction
@@ -189,7 +189,7 @@ yComponentIsConsistentWithComponentIn =
 equalWithin : Test
 equalWithin =
     Test.describe "equalWithin"
-        [ Test.check1 "Rotation by 2 degrees"
+        [ Test.check "Rotation by 2 degrees"
             Random.direction2d
             (\direction ->
                 Direction2d.rotateBy (Angle.degrees 2) direction
@@ -200,7 +200,7 @@ equalWithin =
                             >> Expect.equal False
                         ]
             )
-        , Test.check1 "Rotation by 90 degrees"
+        , Test.check "Rotation by 90 degrees"
             Random.direction2d
             (\direction ->
                 Direction2d.rotateBy (Angle.degrees 90) direction
@@ -211,7 +211,7 @@ equalWithin =
                             >> Expect.equal False
                         ]
             )
-        , Test.check1 "Rotation by 178 degrees"
+        , Test.check "Rotation by 178 degrees"
             Random.direction2d
             (\direction ->
                 Direction2d.rotateBy (Angle.degrees 178) direction
@@ -285,7 +285,7 @@ relativeToAndPlaceInAreInverses =
 
 components : Test
 components =
-    Test.check1 "components and xComponent/yComponent are consistent" Random.direction2d <|
+    Test.check "components and xComponent/yComponent are consistent" Random.direction2d <|
         \direction ->
             Expect.all
                 [ Tuple.first >> Expect.exactly (Direction2d.xComponent direction)

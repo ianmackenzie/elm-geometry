@@ -14,14 +14,14 @@ import Test.Check as Test
 
 randomlyGeneratedSketchPlanesAreValid : Test
 randomlyGeneratedSketchPlanesAreValid =
-    Test.check1 "Randomly generated sketch planes are valid"
+    Test.check "Randomly generated sketch planes are valid"
         Random.sketchPlane3d
         Expect.validSketchPlane3d
 
 
 normalDirectionIsValid : Test
 normalDirectionIsValid =
-    Test.check1 "Sketch plane normal direction is valid and is perpendicular to both basis directions"
+    Test.check "Sketch plane normal direction is valid and is perpendicular to both basis directions"
         Random.sketchPlane3d
         (\sketchPlane ->
             SketchPlane3d.normalDirection sketchPlane

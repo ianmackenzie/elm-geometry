@@ -23,7 +23,7 @@ import Tests.QuadraticSpline3d
 
 fromEndpointsReproducesSpline : Test
 fromEndpointsReproducesSpline =
-    Test.check1 "CubicSpline3d.fromEndpoints reproduces original spline"
+    Test.check "CubicSpline3d.fromEndpoints reproduces original spline"
         Random.cubicSpline3d
         (\spline ->
             let
@@ -46,7 +46,7 @@ fromEndpointsReproducesSpline =
 
 arcLengthMatchesAnalytical : Test
 arcLengthMatchesAnalytical =
-    Test.check1 "arc length matches analytical formula"
+    Test.check "arc length matches analytical formula"
         Tests.QuadraticSpline3d.curvedSpline
         (\quadraticSpline ->
             quadraticSpline
@@ -65,7 +65,7 @@ arcLengthMatchesAnalytical =
 
 pointAtZeroLengthIsStart : Test
 pointAtZeroLengthIsStart =
-    Test.check1 "point along spline at zero length is start point"
+    Test.check "point along spline at zero length is start point"
         Random.cubicSpline3d
         (\spline ->
             case CubicSpline3d.nondegenerate spline of
@@ -86,7 +86,7 @@ pointAtZeroLengthIsStart =
 
 pointAtArcLengthIsEnd : Test
 pointAtArcLengthIsEnd =
-    Test.check1 "point along spline at arc length is end point"
+    Test.check "point along spline at arc length is end point"
         Random.cubicSpline3d
         (\spline ->
             case CubicSpline3d.nondegenerate spline of
@@ -110,7 +110,7 @@ pointAtArcLengthIsEnd =
 
 bSplineReproducesSpline : Test
 bSplineReproducesSpline =
-    Test.check1 "Can reconstruct a cubic spline with a B-spline with repeated knots"
+    Test.check "Can reconstruct a cubic spline with a B-spline with repeated knots"
         Random.cubicSpline3d
         (\spline ->
             let

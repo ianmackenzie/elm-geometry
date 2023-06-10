@@ -10,7 +10,7 @@ import Triangle2d
 
 triangleContainsOwnCentroid : Test
 triangleContainsOwnCentroid =
-    Test.check1 "non-zero area triangle contains its own centroid"
+    Test.check "non-zero area triangle contains its own centroid"
         Random.triangle2d
         (\triangle ->
             let

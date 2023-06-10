@@ -12,7 +12,7 @@ import Vector3d
 
 frameDirectionsAreOrthonormal : Test
 frameDirectionsAreOrthonormal =
-    Test.check1 "Frame3d basis directions are orthonormal"
+    Test.check "Frame3d basis directions are orthonormal"
         Random.frame3d
         (\frame ->
             let

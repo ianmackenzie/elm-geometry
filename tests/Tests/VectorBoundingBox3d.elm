@@ -25,7 +25,7 @@ boxAndContainedVector =
 
 length : Test
 length =
-    Test.check1 "length" boxAndContainedVector <|
+    Test.check "length" boxAndContainedVector <|
         \( box, vector ) ->
             Vector3d.length vector
                 |> Expect.quantityContainedIn (VectorBoundingBox3d.length box)

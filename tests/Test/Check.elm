@@ -1,6 +1,5 @@
 module Test.Check exposing
     ( check
-    , check1
     , check2
     , check3
     , check4
@@ -11,6 +10,7 @@ module Test.Check exposing
     )
 
 import Expect exposing (Expectation)
+import Fuzz
 import Random exposing (Generator)
 import Test exposing (Test)
 
@@ -20,28 +20,19 @@ combine expectations =
     Expect.all (List.map always expectations) ()
 
 
-check : String -> Generator Expectation -> Test
-check description generator =
-    Test.test description (checkImpl generator)
+checkImpl : String -> Generator Expectation -> Test
+checkImpl description generator =
+    Test.fuzz (Fuzz.fromGenerator generator) description identity
 
 
-checkImpl : Generator Expectation -> () -> Expectation
-checkImpl generator () =
-    let
-        ( expectations, _ ) =
-            Random.step (Random.list 100 generator) (Random.initialSeed 1234)
-    in
-    Expect.all (List.map always expectations) ()
-
-
-check1 : String -> Generator a -> (a -> Expectation) -> Test
-check1 description generator expectation =
-    check description (Random.map expectation generator)
+check : String -> Generator a -> (a -> Expectation) -> Test
+check description generator expectation =
+    checkImpl description (Random.map expectation generator)
 
 
 check2 : String -> Generator a -> Generator b -> (a -> b -> Expectation) -> Test
 check2 description firstGenerator secondGenerator expectation =
-    check description <|
+    checkImpl description <|
         Random.map2
             expectation
             firstGenerator
@@ -50,7 +41,7 @@ check2 description firstGenerator secondGenerator expectation =
 
 check3 : String -> Generator a -> Generator b -> Generator c -> (a -> b -> c -> Expectation) -> Test
 check3 description firstGenerator secondGenerator thirdGenerator expectation =
-    check description <|
+    checkImpl description <|
         Random.map3 expectation
             firstGenerator
             secondGenerator
@@ -66,7 +57,7 @@ check4 :
     -> (a -> b -> c -> d -> Expectation)
     -> Test
 check4 description firstGenerator secondGenerator thirdGenerator fourthGenerator expectation =
-    check description <|
+    checkImpl description <|
         Random.map4 expectation
             firstGenerator
             secondGenerator
@@ -84,7 +75,7 @@ check5 :
     -> (a -> b -> c -> d -> e -> Expectation)
     -> Test
 check5 description firstGenerator secondGenerator thirdGenerator fourthGenerator fifthGenerator expectation =
-    check description <|
+    checkImpl description <|
         Random.map5 expectation
             firstGenerator
             secondGenerator
@@ -109,7 +100,7 @@ check6 :
     -> (a -> b -> c -> d -> e -> f -> Expectation)
     -> Test
 check6 description firstGenerator secondGenerator thirdGenerator fourthGenerator fifthGenerator sixthGenerator expectation =
-    check description
+    checkImpl description
         (Random.constant expectation
             |> andMap firstGenerator
             |> andMap secondGenerator
@@ -132,7 +123,7 @@ check7 :
     -> (a -> b -> c -> d -> e -> f -> g -> Expectation)
     -> Test
 check7 description firstGenerator secondGenerator thirdGenerator fourthGenerator fifthGenerator sixthGenerator seventhGenerator expectation =
-    check description
+    checkImpl description
         (Random.constant expectation
             |> andMap firstGenerator
             |> andMap secondGenerator
@@ -157,7 +148,7 @@ check8 :
     -> (a -> b -> c -> d -> e -> f -> g -> h -> Expectation)
     -> Test
 check8 description firstGenerator secondGenerator thirdGenerator fourthGenerator fifthGenerator sixthGenerator seventhGenerator eigthGenerator expectation =
-    check description
+    checkImpl description
         (Random.constant expectation
             |> andMap firstGenerator
             |> andMap secondGenerator

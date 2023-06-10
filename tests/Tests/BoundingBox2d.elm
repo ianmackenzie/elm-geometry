@@ -128,7 +128,7 @@ intersectionIsValidOrNothing =
 
 boxContainsOwnCenterPoint : Test
 boxContainsOwnCenterPoint =
-    Test.check1 "a bounding box contains its own center point"
+    Test.check "a bounding box contains its own center point"
         Random.boundingBox2d
         (\box ->
             let
@@ -409,7 +409,7 @@ offsetResultIsValidOrNothing =
 
 offsetByHalfWidthIsValidOrNothing : Test
 offsetByHalfWidthIsValidOrNothing =
-    Test.check1 "offsetBy returns either Nothing or Just a valid box when offseting by -width / 2"
+    Test.check "offsetBy returns either Nothing or Just a valid box when offseting by -width / 2"
         Random.boundingBox2d
         (\boundingBox ->
             let
@@ -430,7 +430,7 @@ offsetByHalfWidthIsValidOrNothing =
 
 offsetByHalfHeightIsValidOrNothing : Test
 offsetByHalfHeightIsValidOrNothing =
-    Test.check1 "offsetBy returns either Nothing or Just a valid box when offseting by -height / 2"
+    Test.check "offsetBy returns either Nothing or Just a valid box when offseting by -height / 2"
         Random.boundingBox2d
         (\boundingBox ->
             let
@@ -463,7 +463,7 @@ hullNConsistentWithHull2 =
 
 hullNIsOrderIndependent : Test
 hullNIsOrderIndependent =
-    Test.check1 "'hullN' does not depend on input order"
+    Test.check "'hullN' does not depend on input order"
         (Random.smallList Random.point2d)
         (\points ->
             BoundingBox2d.hullN (List.reverse points)

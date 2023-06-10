@@ -134,7 +134,7 @@ orthonormalizingCoplanarVectorsReturnsNothing =
 
 perpendicularDirectionIsPerpendicular : Test
 perpendicularDirectionIsPerpendicular =
-    Test.check1 "perpendicularTo returns a perpendicular direction"
+    Test.check "perpendicularTo returns a perpendicular direction"
         Random.direction3d
         (\direction ->
             Direction3d.perpendicularTo direction
@@ -144,7 +144,7 @@ perpendicularDirectionIsPerpendicular =
 
 perpendicularDirectionIsValid : Test
 perpendicularDirectionIsValid =
-    Test.check1 "perpendicularTo returns a valid direction"
+    Test.check "perpendicularTo returns a valid direction"
         Random.direction3d
         (\direction ->
             Direction3d.perpendicularTo direction
@@ -216,7 +216,7 @@ third ( _, _, z ) =
 
 components : Test
 components =
-    Test.check1 "components and xComponent etc. are consistent" Random.direction3d <|
+    Test.check "components and xComponent etc. are consistent" Random.direction3d <|
         \direction ->
             Expect.all
                 [ first >> Expect.exactly (Direction3d.xComponent direction)

@@ -24,7 +24,7 @@ import Vector2d
 
 perpendicularVectorIsPerpendicular : Test
 perpendicularVectorIsPerpendicular =
-    Test.check1 "perpendicularTo actually returns a perpendicular vector"
+    Test.check "perpendicularTo actually returns a perpendicular vector"
         Random.vector2d
         (\vector ->
             vector
@@ -36,7 +36,7 @@ perpendicularVectorIsPerpendicular =
 
 dotProductWithSelfIsSquaredLength : Test
 dotProductWithSelfIsSquaredLength =
-    Test.check1 "Dot product of a vector with itself is its squared length"
+    Test.check "Dot product of a vector with itself is its squared length"
         Random.vector2d
         (\vector ->
             (vector |> Vector2d.dot vector)
@@ -126,7 +126,7 @@ mirrorAcrossNegatesPerpendicularComponent =
 
 components : Test
 components =
-    Test.check1 "components and xComponent/yComponent are consistent" Random.vector2d <|
+    Test.check "components and xComponent/yComponent are consistent" Random.vector2d <|
         \vector ->
             Expect.all
                 [ Tuple.first >> Expect.quantity (Vector2d.xComponent vector)
@@ -137,7 +137,7 @@ components =
 
 sum : Test
 sum =
-    Test.check1 "sum is consistent with plus" (Random.smallList Random.vector2d) <|
+    Test.check "sum is consistent with plus" (Random.smallList Random.vector2d) <|
         \vectors ->
             Vector2d.sum vectors
                 |> Expect.vector2d
@@ -147,10 +147,10 @@ sum =
 vectorScaling : Test
 vectorScaling =
     Test.describe "scaling vectors"
-        [ Test.check1 "scaling a zero vector results in a zero vector" Random.length <|
+        [ Test.check "scaling a zero vector results in a zero vector" Random.length <|
             \len ->
                 Expect.equal Vector2d.zero (Vector2d.scaleTo len Vector2d.zero)
-        , Test.check1 "scaleTo has a consistent length" (Random.pair Random.length Random.vector2d) <|
+        , Test.check "scaleTo has a consistent length" (Random.pair Random.length Random.vector2d) <|
             \( scale, vector ) ->
                 if vector == Vector2d.zero then
                     Vector2d.scaleTo scale vector
@@ -160,7 +160,7 @@ vectorScaling =
                     Vector2d.scaleTo scale vector
                         |> Vector2d.length
                         |> Expect.quantity (Quantity.abs scale)
-        , Test.check1 "normalize has a consistent length" Random.vector2d <|
+        , Test.check "normalize has a consistent length" Random.vector2d <|
             \vector ->
                 if vector == Vector2d.zero then
                     Vector2d.normalize vector
