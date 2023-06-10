@@ -15,11 +15,6 @@ import Random exposing (Generator)
 import Test exposing (Test)
 
 
-combine : List Expectation -> Expectation
-combine expectations =
-    Expect.all (List.map always expectations) ()
-
-
 checkImpl : String -> Generator Expectation -> Test
 checkImpl description generator =
     Test.fuzz (Fuzz.fromGenerator generator) description identity
