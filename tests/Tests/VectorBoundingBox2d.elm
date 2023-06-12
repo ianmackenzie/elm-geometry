@@ -8,7 +8,7 @@ import Quantity exposing (Quantity, Unitless)
 import Quantity.Interval as Interval exposing (Interval)
 import Random exposing (Generator)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Vector2d exposing (Vector2d)
 import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 

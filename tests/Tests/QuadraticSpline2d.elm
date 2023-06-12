@@ -21,7 +21,7 @@ import QuadraticSpline2d exposing (QuadraticSpline2d)
 import Quantity exposing (Quantity, zero)
 import Random exposing (Generator)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve2d
 import Tests.Literals exposing (ok)
 

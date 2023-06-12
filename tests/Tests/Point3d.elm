@@ -27,7 +27,7 @@ import Quantity exposing (zero)
 import Random
 import SketchPlane3d
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Triangle3d
 import Vector3d
 

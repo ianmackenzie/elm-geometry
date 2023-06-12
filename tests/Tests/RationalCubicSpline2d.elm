@@ -16,7 +16,7 @@ import Quantity
 import Random
 import RationalCubicSpline2d exposing (RationalCubicSpline2d)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve2d
 import Vector2d
 

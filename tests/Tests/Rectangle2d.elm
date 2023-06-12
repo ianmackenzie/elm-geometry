@@ -15,7 +15,7 @@ import Point2d exposing (Point2d)
 import Random exposing (Generator)
 import Rectangle2d exposing (Rectangle2d)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Vector2d exposing (Vector2d)
 
 

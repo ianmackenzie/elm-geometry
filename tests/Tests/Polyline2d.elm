@@ -18,7 +18,7 @@ import Point2d
 import Polyline2d
 import Random
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 
 
 emptyPolylineHasNothingCentroid : Test

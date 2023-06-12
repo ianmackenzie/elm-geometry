@@ -16,7 +16,7 @@ import Geometry.Random as Random
 import Length exposing (Meters)
 import Point3d
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve3d
 
 

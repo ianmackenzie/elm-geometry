@@ -18,7 +18,7 @@ import Length exposing (Meters, meters)
 import Point2d
 import Quantity exposing (zero)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve2d
 import Tests.QuadraticSpline2d
 import Vector2d

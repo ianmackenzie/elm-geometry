@@ -22,7 +22,7 @@ import Quantity exposing (zero)
 import Random
 import Rectangle2d
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Triangle2d
 import TriangularMesh
 import Vector2d

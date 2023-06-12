@@ -18,7 +18,7 @@ import Quantity exposing (zero)
 import Random exposing (Generator)
 import SweptAngle
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve2d
 import Vector2d
 

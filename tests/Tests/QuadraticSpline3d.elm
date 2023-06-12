@@ -20,7 +20,7 @@ import QuadraticSpline3d exposing (QuadraticSpline3d)
 import Quantity exposing (zero)
 import Random exposing (Generator)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve3d
 import Tests.QuadraticSpline2d
 

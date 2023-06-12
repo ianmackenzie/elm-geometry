@@ -22,7 +22,7 @@ import Point2d
 import Quantity
 import Quantity.Interval as Interval
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Triangle2d
 import Vector2d
 

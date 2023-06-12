@@ -25,7 +25,7 @@ import Geometry.Random as Random
 import Quantity
 import Random
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Vector3d
 
 

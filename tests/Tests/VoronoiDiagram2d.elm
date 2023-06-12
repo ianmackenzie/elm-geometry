@@ -20,7 +20,7 @@ import Quantity
 import Random exposing (Generator)
 import SketchPlane3d
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Vector3d
 import VoronoiDiagram2d
 

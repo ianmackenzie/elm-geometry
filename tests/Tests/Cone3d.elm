@@ -14,7 +14,7 @@ import Point3d exposing (Point3d)
 import Quantity exposing (Quantity)
 import Random exposing (Generator)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Vector3d exposing (Vector3d)
 
 

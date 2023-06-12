@@ -21,7 +21,7 @@ import Quantity exposing (Quantity(..))
 import Random
 import SketchPlane3d
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Vector3d
 import Volume exposing (cubicMeters)
 

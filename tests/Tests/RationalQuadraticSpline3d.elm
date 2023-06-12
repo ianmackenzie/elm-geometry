@@ -15,7 +15,7 @@ import Quantity
 import Random
 import RationalQuadraticSpline3d exposing (RationalQuadraticSpline3d)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve3d
 import Vector3d
 

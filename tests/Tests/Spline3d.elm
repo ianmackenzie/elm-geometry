@@ -33,7 +33,7 @@ import QuadraticSpline3d
 import Random
 import Spline3d exposing (Spline3d)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve3d
 import Tests.Spline2d
 import Vector3d

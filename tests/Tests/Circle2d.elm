@@ -7,7 +7,7 @@ import Geometry.Random as Random
 import Length
 import Point2d
 import Test exposing (Test, test)
-import Test.Check as Test
+import Test.Random as Test
 
 
 boundingBoxContainsCenter : Test

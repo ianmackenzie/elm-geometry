@@ -16,7 +16,7 @@ import Geometry.Types exposing (CubicSpline3d)
 import Length exposing (Meters, meters)
 import Quantity exposing (zero)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Tests.Generic.Curve3d
 import Tests.QuadraticSpline3d
 

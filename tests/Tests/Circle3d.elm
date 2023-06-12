@@ -9,7 +9,7 @@ import Geometry.Random as Random
 import Point3d
 import Quantity
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Triangle3d
 
 

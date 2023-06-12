@@ -30,7 +30,7 @@ import Quantity exposing (Cubed, Quantity, Squared, Unitless)
 import Random
 import Sphere3d exposing (Sphere3d)
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Triangle3d
 import Vector3d
 import Volume exposing (Volume)

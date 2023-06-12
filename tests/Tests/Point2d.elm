@@ -20,7 +20,7 @@ import Point2d
 import Quantity exposing (zero)
 import Random
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Triangle2d
 import Vector2d
 

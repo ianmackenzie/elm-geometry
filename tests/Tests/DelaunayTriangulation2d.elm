@@ -20,7 +20,7 @@ import Quantity
 import Random exposing (Generator)
 import SketchPlane3d
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Triangle2d
 import Vector3d
 

@@ -32,7 +32,7 @@ import Rectangle3d
 import SketchPlane3d
 import Sphere3d
 import Test exposing (Test)
-import Test.Check as Test
+import Test.Random as Test
 import Triangle3d
 import Vector3d
 
