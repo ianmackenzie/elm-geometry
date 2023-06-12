@@ -24,7 +24,6 @@ module Geometry.Random exposing
     , length
     , lineSegment2d
     , lineSegment3d
-    , oneOf
     , parameterValue
     , plane3d
     , point2d
@@ -106,11 +105,6 @@ import Vector2d exposing (Vector2d)
 import Vector3d exposing (Vector3d)
 import VectorBoundingBox2d exposing (VectorBoundingBox2d)
 import VectorBoundingBox3d exposing (VectorBoundingBox3d)
-
-
-oneOf : Generator a -> List (Generator a) -> Generator a
-oneOf first rest =
-    Random.uniform first rest |> Random.andThen identity
 
 
 smallList : Generator a -> Generator (List a)

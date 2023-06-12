@@ -19,6 +19,7 @@ import Length exposing (Meters, meters)
 import Point2d
 import Quantity exposing (zero)
 import Random
+import Random.Extra
 import SweptAngle
 import Test exposing (Test)
 import Test.Random as Test
@@ -73,7 +74,7 @@ from =
     let
         validAngle =
             Random.map Angle.degrees <|
-                Random.oneOf
+                Random.Extra.choices
                     (Random.float -359 359)
                     [ Random.float 361 719
                     , Random.float -719 -361

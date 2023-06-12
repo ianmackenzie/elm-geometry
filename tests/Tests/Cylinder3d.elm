@@ -13,6 +13,7 @@ import Plane3d exposing (Plane3d)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity)
 import Random exposing (Generator)
+import Random.Extra
 import Test exposing (Test)
 import Test.Random as Test
 import Vector3d exposing (Vector3d)
@@ -64,7 +65,7 @@ mirroring plane =
 
 transformationGenerator : Generator (Transformation coordinates)
 transformationGenerator =
-    Random.oneOf
+    Random.Extra.choices
         (Random.map2 rotation Random.axis3d Random.angle)
         [ Random.map translation Random.vector3d
         , Random.map2 scaling Random.point3d Random.scale

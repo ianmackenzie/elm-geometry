@@ -13,6 +13,7 @@ import Length exposing (Meters)
 import LineSegment2d exposing (LineSegment2d)
 import Point2d exposing (Point2d)
 import Random exposing (Generator)
+import Random.Extra
 import Rectangle2d exposing (Rectangle2d)
 import Test exposing (Test)
 import Test.Random as Test
@@ -65,7 +66,7 @@ mirroring axis =
 
 transformationGenerator : Generator (Transformation coordinates)
 transformationGenerator =
-    Random.oneOf
+    Random.Extra.choices
         (Random.map2 rotation Random.point2d Random.angle)
         [ Random.map translation Random.vector2d
         , Random.map2 scaling Random.point2d Random.scale

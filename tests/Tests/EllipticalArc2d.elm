@@ -16,6 +16,7 @@ import Length exposing (Meters, meters)
 import Point2d
 import Quantity exposing (zero)
 import Random exposing (Generator)
+import Random.Extra
 import SweptAngle
 import Test exposing (Test)
 import Test.Random as Test
@@ -37,7 +38,7 @@ reproducibleArc =
         Random.direction2d
         (Random.map meters (Random.float 0.1 10))
         (Random.map Angle.degrees <|
-            Random.oneOf
+            Random.Extra.choices
                 (Random.float 1 179)
                 [ Random.float 181 359
                 , Random.float -179 -1
