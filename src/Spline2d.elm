@@ -41,7 +41,7 @@ splines) or if the spline degree is not known at compile time.
 
 # Constructors
 
-@docs fromControlPoints, fromQuadraticSpline, fromCubicSpline, on
+@docs fromControlPoints, fromQuadraticSpline, fromCubicSpline
 
 
 ## B-splines
@@ -69,7 +69,7 @@ splines) or if the spline degree is not known at compile time.
 These transformations generally behave just like [the ones in the `Point2d`
 module](Point2d#transformations).
 
-@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross, projectOnto
+@docs reverse, scaleAbout, rotateAround, translateBy, translateIn, mirrorAcross
 
 
 # Unit conversions
@@ -79,7 +79,7 @@ module](Point2d#transformations).
 
 # Coordinate conversions
 
-@docs relativeTo, placeIn, projectInto
+@docs relativeTo, placeIn
 
 
 # Subdivision
