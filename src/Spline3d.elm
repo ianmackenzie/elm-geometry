@@ -92,7 +92,7 @@ module](Point3d#transformations).
 You are unlikely to need to use these functions directly, but they are useful if
 you are writing low-level geometric algorithms.
 
-@docs firstDerivative, secondDerivative, thirdDerivative, firstDerivativeBoundingBox, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude, numApproximationSegments
+@docs firstDerivative, secondDerivative, firstDerivativeBoundingBox, secondDerivativeBoundingBox, maxSecondDerivativeMagnitude, numApproximationSegments
 
 -}
 
