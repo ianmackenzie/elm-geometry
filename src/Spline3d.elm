@@ -870,6 +870,10 @@ secondDerivativeBoundingBox spline =
             VectorBoundingBox3d.singleton Vector3d.zero
 
 
+{-| Find a conservative upper bound on the magnitude of the second derivative of
+a spline. This can be useful when determining error bounds for various kinds of
+linear approximations.
+-}
 maxSecondDerivativeMagnitude : Spline3d units coordinates -> Quantity Float units
 maxSecondDerivativeMagnitude spline =
     Quantity.Interval.maxValue (VectorBoundingBox3d.length (secondDerivativeBoundingBox spline))
