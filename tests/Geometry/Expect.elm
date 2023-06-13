@@ -14,7 +14,7 @@ module Geometry.Expect exposing
 
 {-| This module contains functions that construct [`Expectation`](https://package.elm-lang.org/packages/elm-explorations/test/latest/Expect)s
 for `elm-geometry` types. In general, all expectations use an
-absolute-or-relative tolerance of 1e-12; for example,
+absolute-or-relative tolerance of 1e-12 meters; for example,
 
     actualPoint |> Expect.point2d expectedPoint
 
