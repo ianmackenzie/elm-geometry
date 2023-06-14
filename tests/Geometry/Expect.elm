@@ -1,7 +1,8 @@
 module Geometry.Expect exposing
     ( exactly, just, list
     , quantity, quantityWithin, angle, angleWithin
-    , quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, quantityContainedIn
+    , quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan
+    , quantityContainedIn
     , point2d, point2dWithin, point2dContainedIn, point3d, point3dWithin, point3dContainedIn
     , vector2d, vector2dWithin, vector2dContainedIn, vector3d, vector3dWithin, vector3dContainedIn
     , direction2d, direction2dWithin, direction2dPerpendicularTo, direction3d, direction3dWithin, direction3dPerpendicularTo
@@ -49,7 +50,12 @@ These functions all behave just like [the corresponding ones in
 Unlike most other functions in this module, they do _not_ implicitly include a
 tolerance.
 
-@docs quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan, quantityContainedIn
+@docs quantityAtLeast, quantityAtMost, quantityGreaterThan, quantityLessThan
+
+
+# Intervals
+
+@docs quantityContainedIn
 
 
 # Points
@@ -212,6 +218,9 @@ just expectation actualMaybe =
             Expect.fail "Expected a Just but got Nothing"
 
 
+{-| Apply a given expectation function to successive pairs of items from two given lists, failing
+if any one of those expectations fails or if the two lists have different lengths.
+-}
 list : (a -> b -> Expectation) -> List a -> List b -> Expectation
 list expectation firstList secondList =
     case ( firstList, secondList ) of
@@ -318,6 +327,10 @@ quantityAtLeast (Quantity y) (Quantity x) =
     x |> Expect.atLeast y
 
 
+{-| Check whether a given quantity is contained within a given interval, within the default
+tolerance of 1e-12 units. (That is, a quantity _just_ outside the interval will still be considered
+contained in the interval.)
+-}
 quantityContainedIn : Interval Float units -> Quantity Float units -> Expectation
 quantityContainedIn interval value =
     let
