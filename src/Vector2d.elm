@@ -310,7 +310,7 @@ xy (Quantity x) (Quantity y) =
     -->     (Length.meters 1.4142)
 
 -}
-xyIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Quantity Float units -> Vector2d units globalCoordinates
+xyIn : Frame2d frameUnits globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Quantity Float units -> Vector2d units globalCoordinates
 xyIn (Types.Frame2d frame) (Quantity x) (Quantity y) =
     let
         (Types.Direction2d i) =
@@ -353,7 +353,7 @@ frame:
     --> Vector2d.meters 0.7071 0.7071
 
 -}
-rThetaIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Angle -> Vector2d units globalCoordinates
+rThetaIn : Frame2d frameUnits globalCoordinates { defines : localCoordinates } -> Quantity Float units -> Angle -> Vector2d units globalCoordinates
 rThetaIn (Types.Frame2d frame) (Quantity r) (Quantity theta) =
     let
         (Types.Direction2d i) =
@@ -1311,7 +1311,7 @@ projectionIn (Types.Direction2d d) (Types.Vector2d v) =
 This is equivalent to finding the projection in the axis' direction.
 
 -}
-projectOnto : Axis2d units coordinates -> Vector2d units coordinates -> Vector2d units coordinates
+projectOnto : Axis2d axisUnits coordinates -> Vector2d units coordinates -> Vector2d units coordinates
 projectOnto (Types.Axis2d axis) (Types.Vector2d v) =
     let
         (Types.Direction2d d) =
@@ -1334,7 +1334,7 @@ local coordinates relative to a given reference frame.
     --> Vector2d.meters 1.732 -1
 
 -}
-relativeTo : Frame2d units globalCoordinates { defines : localCoordinates } -> Vector2d units globalCoordinates -> Vector2d units localCoordinates
+relativeTo : Frame2d frameUnits globalCoordinates { defines : localCoordinates } -> Vector2d units globalCoordinates -> Vector2d units localCoordinates
 relativeTo (Types.Frame2d frame) (Types.Vector2d v) =
     let
         (Types.Direction2d dx) =
@@ -1357,7 +1357,7 @@ frame, and return that vector expressed in global coordinates.
     --> Vector2d.meters 1.732 1
 
 -}
-placeIn : Frame2d units globalCoordinates { defines : localCoordinates } -> Vector2d units localCoordinates -> Vector2d units globalCoordinates
+placeIn : Frame2d frameUnits globalCoordinates { defines : localCoordinates } -> Vector2d units localCoordinates -> Vector2d units globalCoordinates
 placeIn (Types.Frame2d frame) (Types.Vector2d v) =
     let
         (Types.Direction2d dx) =
