@@ -97,7 +97,7 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle)
-import ArcLengthParameterization exposing (ArcLengthParameterization)
+import ArcLength
 import Array exposing (Array)
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)

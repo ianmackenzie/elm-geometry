@@ -124,7 +124,7 @@ you are writing low-level geometric algorithms.
 
 import Angle exposing (Angle)
 import Angle.Interval
-import ArcLengthParameterization exposing (ArcLengthParameterization)
+import ArcLength
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Curve
@@ -972,7 +972,7 @@ derivativeMagnitude arc =
 type ArcLengthParameterized units coordinates
     = ArcLengthParameterized
         { underlyingArc : EllipticalArc2d units coordinates
-        , parameterization : ArcLengthParameterization units
+        , parameterization : ArcLength.Parameterization units
         , nondegenerateArc : Nondegenerate units coordinates
         }
 
@@ -987,7 +987,7 @@ arcLengthParameterized { maxError } nondegenerateArc =
             fromNondegenerate nondegenerateArc
 
         parameterization =
-            ArcLengthParameterization.build
+            ArcLength.parameterization
                 { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude arc
                 , maxSecondDerivativeMagnitude =
@@ -1007,7 +1007,7 @@ given when calling `arcLengthParameterized`.
 arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedArc =
     arcLengthParameterization parameterizedArc
-        |> ArcLengthParameterization.totalArcLength
+        |> ArcLength.total
 
 
 {-| Get the point along an elliptical arc at a given arc length.
@@ -1015,7 +1015,7 @@ arcLength parameterizedArc =
 pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Point2d units coordinates
 pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue distance
+        |> ArcLength.toParameterValue distance
         |> pointOn parameterized.underlyingArc
 
 
@@ -1037,7 +1037,7 @@ midpoint parameterized =
 tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Direction2d coordinates
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue distance
+        |> ArcLength.toParameterValue distance
         |> tangentDirection parameterized.nondegenerateArc
 
 
@@ -1047,12 +1047,12 @@ length.
 sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> ( Point2d units coordinates, Direction2d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue distance
+        |> ArcLength.toParameterValue distance
         |> sample parameterized.nondegenerateArc
 
 
 {-| -}
-arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLengthParameterization units
+arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLength.Parameterization units
 arcLengthParameterization (ArcLengthParameterized parameterized) =
     parameterized.parameterization
 

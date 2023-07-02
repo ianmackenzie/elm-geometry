@@ -119,7 +119,7 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle)
-import ArcLengthParameterization exposing (ArcLengthParameterization)
+import ArcLength
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
 import CubicSpline2d exposing (CubicSpline2d)
@@ -872,7 +872,7 @@ splitAt parameterValue spline =
 type ArcLengthParameterized units coordinates
     = ArcLengthParameterized
         { underlyingSpline : CubicSpline3d units coordinates
-        , parameterization : ArcLengthParameterization units
+        , parameterization : ArcLength.Parameterization units
         , nondegenerateSpline : Nondegenerate units coordinates
         }
 
@@ -887,7 +887,7 @@ arcLengthParameterized { maxError } nondegenerateSpline =
             fromNondegenerate nondegenerateSpline
 
         parameterization =
-            ArcLengthParameterization.build
+            ArcLength.parameterization
                 { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude =
@@ -907,7 +907,7 @@ when constructing the given arc length parameterization.
 arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedSpline =
     arcLengthParameterization parameterizedSpline
-        |> ArcLengthParameterization.totalArcLength
+        |> ArcLength.total
 
 
 {-| Get the midpoint of a spline. Note that this is the point half way along the
@@ -928,7 +928,7 @@ midpoint parameterized =
 pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Point3d units coordinates
 pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue distance
+        |> ArcLength.toParameterValue distance
         |> pointOn parameterized.underlyingSpline
 
 
@@ -937,7 +937,7 @@ pointAlong (ArcLengthParameterized parameterized) distance =
 tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Direction3d coordinates
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue distance
+        |> ArcLength.toParameterValue distance
         |> tangentDirection parameterized.nondegenerateSpline
 
 
@@ -947,12 +947,12 @@ length.
 sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> ( Point3d units coordinates, Direction3d coordinates )
 sampleAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue distance
+        |> ArcLength.toParameterValue distance
         |> sample parameterized.nondegenerateSpline
 
 
 {-| -}
-arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLengthParameterization units
+arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLength.Parameterization units
 arcLengthParameterization (ArcLengthParameterized parameterized) =
     parameterized.parameterization
 

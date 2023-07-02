@@ -7,10 +7,10 @@
 --------------------------------------------------------------------------------
 
 
-module ArcLengthParameterization exposing
-    ( ArcLengthParameterization
-    , build
-    , totalArcLength, arcLengthToParameterValue, parameterValueToArcLength
+module ArcLength exposing
+    ( Parameterization
+    , parameterization
+    , total, toParameterValue, fromParameterValue
     )
 
 {-| _You will likely never need to use this module directly._ In the vast
@@ -21,17 +21,17 @@ points. This module is primarily for use internally by those curve modules, but
 may be useful if you want to do some fancy mapping between arc length and curve
 parameter values.
 
-@docs ArcLengthParameterization
+@docs Parameterization
 
 
 # Constructing
 
-@docs build
+@docs parameterization
 
 
 # Evaluating
 
-@docs totalArcLength, arcLengthToParameterValue, parameterValueToArcLength
+@docs total, toParameterValue, fromParameterValue
 
 -}
 
@@ -43,8 +43,8 @@ import Quantity.Extra as Quantity
 {-| Contains a mapping from curve parameter value to arc length, and vice versa.
 Parameter values are assumed to range from 0 to 1.
 -}
-type ArcLengthParameterization units
-    = ArcLengthParameterization SegmentTree
+type Parameterization units
+    = Parameterization SegmentTree
 
 
 type SegmentTree
@@ -90,13 +90,13 @@ segmentsPerLeaf =
   - A tolerance specifying the maximum error of the resulting parameterization
 
 -}
-build :
+parameterization :
     { derivativeMagnitude : Float -> Quantity Float units
     , maxSecondDerivativeMagnitude : Quantity Float units
     , maxError : Quantity Float units
     }
-    -> ArcLengthParameterization units
-build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
+    -> Parameterization units
+parameterization { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
     let
         height =
             if maxError |> Quantity.lessThanOrEqualTo zero then
@@ -113,7 +113,7 @@ build { maxError, derivativeMagnitude, maxSecondDerivativeMagnitude } =
                 in
                 max 0 (ceiling (logBase 2 numLeaves))
     in
-    ArcLengthParameterization (buildTree derivativeMagnitude 0 0 1 height)
+    Parameterization (buildTree derivativeMagnitude 0 0 1 height)
 
 
 buildTree : (Float -> Quantity Float units) -> Float -> Float -> Float -> Int -> SegmentTree
@@ -266,8 +266,8 @@ buildTree derivativeMagnitude lengthAtStart_ paramAtStart_ paramAtEnd height =
 {-| Convert an arc length to the corresponding parameter value. The given arc
 length will be clamped to the range [0, length].
 -}
-arcLengthToParameterValue : Quantity Float units -> ArcLengthParameterization units -> Float
-arcLengthToParameterValue (Quantity s) (ArcLengthParameterization tree) =
+toParameterValue : Quantity Float units -> Parameterization units -> Float
+toParameterValue (Quantity s) (Parameterization tree) =
     unsafeToParameterValue tree (clamp 0 (lengthAtEnd tree) s)
 
 
@@ -373,28 +373,26 @@ lengthAtEnd tree =
 {-| Find the total arc length of some curve given its arc length
 parameterization;
 
-    ArcLengthParameterization.totalArcLength
-        parameterization
+    ArcLength.total parameterization
 
 is equivalent to
 
-    ArcLengthParameterization.parameterValueToArcLength 1
-        parameterization
+    ArcLength.fromParameterValue 1 parameterization
 
 but is more efficient. The arc length will be accurate to within the maximum
 error specified when building the parameterization.
 
 -}
-totalArcLength : ArcLengthParameterization units -> Quantity Float units
-totalArcLength (ArcLengthParameterization tree) =
+total : Parameterization units -> Quantity Float units
+total (Parameterization tree) =
     Quantity (lengthAtEnd tree)
 
 
 {-| Convert a parameter value to the corresponding arc length. The parameter
 value will be clamped to the range [0, 1].
 -}
-parameterValueToArcLength : Float -> ArcLengthParameterization units -> Quantity Float units
-parameterValueToArcLength parameterValue (ArcLengthParameterization tree) =
+fromParameterValue : Float -> Parameterization units -> Quantity Float units
+fromParameterValue parameterValue (Parameterization tree) =
     Quantity (unsafeToArcLength tree (clamp 0 1 parameterValue))
 
 

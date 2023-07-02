@@ -10,7 +10,7 @@ module Tests.QuadraticSpline2d exposing
     )
 
 import Angle
-import ArcLengthParameterization
+import ArcLength
 import Expect
 import Float.Extra as Float
 import Geometry.Expect as Expect
@@ -234,7 +234,7 @@ parameterization =
                             parameterValue =
                                 parameterizedSpline
                                     |> QuadraticSpline2d.arcLengthParameterization
-                                    |> ArcLengthParameterization.arcLengthToParameterValue arcLength
+                                    |> ArcLength.toParameterValue arcLength
                         in
                         if arcLength == zero then
                             parameterValue |> Expect.exactly 0

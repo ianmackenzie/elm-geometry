@@ -119,7 +119,7 @@ you are writing low-level geometric algorithms.
 -}
 
 import Angle exposing (Angle)
-import ArcLengthParameterization exposing (ArcLengthParameterization)
+import ArcLength
 import Axis2d exposing (Axis2d)
 import BoundingBox2d exposing (BoundingBox2d)
 import Curve
@@ -820,7 +820,7 @@ splitAt parameterValue spline =
 type ArcLengthParameterized units coordinates
     = ArcLengthParameterized
         { underlyingSpline : CubicSpline2d units coordinates
-        , parameterization : ArcLengthParameterization units
+        , parameterization : ArcLength.Parameterization units
         , nondegenerateSpline : Nondegenerate units coordinates
         }
 
@@ -835,7 +835,7 @@ arcLengthParameterized { maxError } nondegenerateSpline =
             fromNondegenerate nondegenerateSpline
 
         parameterization =
-            ArcLengthParameterization.build
+            ArcLength.parameterization
                 { maxError = maxError
                 , derivativeMagnitude = derivativeMagnitude spline
                 , maxSecondDerivativeMagnitude = maxSecondDerivativeMagnitude spline
@@ -854,7 +854,7 @@ calling [`arcLengthParameterized`](#arcLengthParameterized).
 arcLength : ArcLengthParameterized units coordinates -> Quantity Float units
 arcLength parameterizedSpline =
     arcLengthParameterization parameterizedSpline
-        |> ArcLengthParameterization.totalArcLength
+        |> ArcLength.total
 
 
 {-| Get the midpoint of a spline. Note that this is the point half way along the
@@ -875,7 +875,7 @@ midpoint parameterized =
 pointAlong : ArcLengthParameterized units coordinates -> Quantity Float units -> Point2d units coordinates
 pointAlong (ArcLengthParameterized parameterized) distance =
     parameterized.parameterization
-        |> ArcLengthParameterization.arcLengthToParameterValue distance
+        |> ArcLength.toParameterValue distance
         |> pointOn parameterized.underlyingSpline
 
 
@@ -885,7 +885,7 @@ tangentDirectionAlong : ArcLengthParameterized units coordinates -> Quantity Flo
 tangentDirectionAlong (ArcLengthParameterized parameterized) distance =
     let
         parameterValue =
-            ArcLengthParameterization.arcLengthToParameterValue
+            ArcLength.toParameterValue
                 distance
                 parameterized.parameterization
     in
@@ -898,7 +898,7 @@ sampleAlong : ArcLengthParameterized units coordinates -> Quantity Float units -
 sampleAlong (ArcLengthParameterized parameterized) distance =
     let
         parameterValue =
-            ArcLengthParameterization.arcLengthToParameterValue
+            ArcLength.toParameterValue
                 distance
                 parameterized.parameterization
     in
@@ -906,7 +906,7 @@ sampleAlong (ArcLengthParameterized parameterized) distance =
 
 
 {-| -}
-arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLengthParameterization units
+arcLengthParameterization : ArcLengthParameterized units coordinates -> ArcLength.Parameterization units
 arcLengthParameterization (ArcLengthParameterized parameterized) =
     parameterized.parameterization
 
