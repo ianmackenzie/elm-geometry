@@ -7,7 +7,7 @@
     "exposed-modules": [
         "Arc2d",
         "Arc3d",
-        "ArcLengthParameterization",
+        "ArcLength",
         "Axis2d",
         "Axis3d",
         "Block3d",
