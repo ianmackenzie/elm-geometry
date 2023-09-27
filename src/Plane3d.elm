@@ -261,7 +261,7 @@ reverseNormal plane =
 rotateAround : Axis3d units coordinates -> Angle -> Plane3d units coordinates -> Plane3d units coordinates
 rotateAround axis angle (Types.Plane3d plane) =
     through (Point3d.rotateAround axis angle plane.originPoint)
-        (Direction3d.rotateAround axis angle plane.normalDirection)
+        (Direction3d.rotateAround (Axis3d.direction axis) angle plane.normalDirection)
 
 
 {-| Translate a plane by a given displacement. Applies the given displacement to

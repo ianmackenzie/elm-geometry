@@ -930,7 +930,7 @@ angle between the two given directions is less than the given tolerance.
 
     rotatedDirection =
         Direction3d.x
-            |> Direction3d.rotateAround Axis3d.z
+            |> Direction3d.rotateAround Direction3d.z
                 (Angle.degrees 2)
 
     Direction3d.equalWithin (Angle.degrees 5)
@@ -1015,32 +1015,17 @@ reverse (Types.Direction3d d) =
         }
 
 
-{-| Rotate a direction around an axis by a given angle.
+{-| Rotate a direction around another direction by a given angle.
 
     Direction3d.y
-        |> Direction3d.rotateAround Axis3d.x
+        |> Direction3d.rotateAround Direction3d.x
             (Angle.degrees 90)
     --> Direction3d.z
 
-Note that only the direction of the axis affects the result, not the position of
-its origin point, since directions are position-independent:
-
-    offsetAxis =
-        Axis3d.withDirection Direction3d.z
-            (Point3d.meters 100 200 300)
-
-    Direction3d.x
-        |> Direction3d.rotateAround offsetAxis
-            (Angle.degrees 90)
-    --> Direction3d.y
-
 -}
-rotateAround : Axis3d units coordinates -> Angle -> Direction3d coordinates -> Direction3d coordinates
-rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Direction3d d) =
+rotateAround : Direction3d coordinates -> Angle -> Direction3d coordinates -> Direction3d coordinates
+rotateAround (Types.Direction3d a) (Quantity angle) (Types.Direction3d d) =
     let
-        (Types.Direction3d a) =
-            axis.direction
-
         halfAngle =
             0.5 * angle
 

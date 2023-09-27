@@ -1313,28 +1313,25 @@ scaleTo (Quantity q) (Types.Vector3d v) =
             }
 
 
-{-| Rotate a vector around a given axis by a given angle.
+{-| Rotate a vector around a given direction by a given angle.
 
     vector =
         Vector3d.meters 2 0 1
 
     vector
-        |> Vector3d.rotateAround Axis3d.x
+        |> Vector3d.rotateAround Direction3d.x
             (Angle.degrees 90)
     --> Vector3d.meters 2 -1 0
 
     vector
-        |> Vector3d.rotateAround Axis3d.z
+        |> Vector3d.rotateAround Direction3d.z
             (Angle.degrees 45)
     --> Vector3d.meters 1.4142 1.4142 1
 
 -}
-rotateAround : Axis3d axisUnits coordinates -> Angle -> Vector3d units coordinates -> Vector3d units coordinates
-rotateAround (Types.Axis3d axis) (Quantity angle) (Types.Vector3d v) =
+rotateAround : Direction3d coordinates -> Angle -> Vector3d units coordinates -> Vector3d units coordinates
+rotateAround (Types.Direction3d d) (Quantity angle) (Types.Vector3d v) =
     let
-        (Types.Direction3d d) =
-            axis.direction
-
         halfAngle =
             0.5 * angle
 

@@ -717,11 +717,15 @@ basis directions will all be rotated around the given axis.
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Frame3d units coordinates defines1 -> Frame3d units coordinates defines2
 rotateAround axis angle frame =
+    let
+        axisDirection =
+            Axis3d.direction axis
+    in
     unsafe
         { originPoint = Point3d.rotateAround axis angle (originPoint frame)
-        , xDirection = Direction3d.rotateAround axis angle (xDirection frame)
-        , yDirection = Direction3d.rotateAround axis angle (yDirection frame)
-        , zDirection = Direction3d.rotateAround axis angle (zDirection frame)
+        , xDirection = Direction3d.rotateAround axisDirection angle (xDirection frame)
+        , yDirection = Direction3d.rotateAround axisDirection angle (yDirection frame)
+        , zDirection = Direction3d.rotateAround axisDirection angle (zDirection frame)
         }
 
 

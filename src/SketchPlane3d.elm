@@ -632,13 +632,17 @@ the given axis.
 -}
 rotateAround : Axis3d units coordinates -> Angle -> SketchPlane3d units coordinates defines1 -> SketchPlane3d units coordinates defines2
 rotateAround axis angle sketchPlane =
+    let
+        axisDirection =
+            Axis3d.direction axis
+    in
     unsafe
         { originPoint =
             Point3d.rotateAround axis angle (originPoint sketchPlane)
         , xDirection =
-            Direction3d.rotateAround axis angle (xDirection sketchPlane)
+            Direction3d.rotateAround axisDirection angle (xDirection sketchPlane)
         , yDirection =
-            Direction3d.rotateAround axis angle (yDirection sketchPlane)
+            Direction3d.rotateAround axisDirection angle (yDirection sketchPlane)
         }
 
 

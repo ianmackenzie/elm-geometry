@@ -294,8 +294,12 @@ scaleAbout point scale circle =
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Circle3d units coordinates -> Circle3d units coordinates
 rotateAround givenAxis givenAngle circle =
+    let
+        axisDirection =
+            Axis3d.direction givenAxis
+    in
     withRadius (radius circle)
-        (Direction3d.rotateAround givenAxis givenAngle (axialDirection circle))
+        (Direction3d.rotateAround axisDirection givenAngle (axialDirection circle))
         (Point3d.rotateAround givenAxis givenAngle (centerPoint circle))
 
 

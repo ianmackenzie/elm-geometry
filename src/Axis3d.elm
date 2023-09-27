@@ -425,7 +425,7 @@ rotateAround otherAxis angle =
             Point3d.rotateAround otherAxis angle
 
         rotateDirection =
-            Direction3d.rotateAround otherAxis angle
+            Direction3d.rotateAround (direction otherAxis) angle
     in
     \(Types.Axis3d axis) ->
         through (rotatePoint axis.originPoint) (rotateDirection axis.direction)

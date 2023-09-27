@@ -743,14 +743,18 @@ scaleAbout point scale (Types.Arc3d arc) =
 -}
 rotateAround : Axis3d units coordinates -> Angle -> Arc3d units coordinates -> Arc3d units coordinates
 rotateAround rotationAxis angle (Types.Arc3d arc) =
+    let
+        axisDirection =
+            Axis3d.direction rotationAxis
+    in
     Types.Arc3d
         { startPoint = Point3d.rotateAround rotationAxis angle arc.startPoint
         , sweptAngle = arc.sweptAngle
         , signedLength = arc.signedLength
         , xDirection =
-            Direction3d.rotateAround rotationAxis angle arc.xDirection
+            Direction3d.rotateAround axisDirection angle arc.xDirection
         , yDirection =
-            Direction3d.rotateAround rotationAxis angle arc.yDirection
+            Direction3d.rotateAround axisDirection angle arc.yDirection
         }
 
 
