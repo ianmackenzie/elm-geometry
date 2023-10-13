@@ -1,12 +1,12 @@
 # elm-geometry
 
-NOTE: Currently you probably want to use `elm-geometry` 3.11 instead
+_Release notes for all versions of `elm-geometry` are available
+[here](https://github.com/ianmackenzie/elm-geometry/releases)._
+
+⚠️ **NOTE**: Currently you probably want to use `elm-geometry` 3.11 instead
 if you're using `elm-3d-scene`, since `elm-3d-scene` has not yet been
 updated to use `elm-geometry` 4.0. The next release of `elm-3d-scene`
 will be updated to use `elm-geometry` 4.0.
-
-_Release notes for all versions of `elm-geometry` are available
-[here](https://github.com/ianmackenzie/elm-geometry/releases)._
 
 `elm-geometry` is an [Elm](http://elm-lang.org) package for working with 2D and
 3D geometry. It provides a wide variety of geometric data types such as points,
