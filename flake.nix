@@ -19,8 +19,8 @@
             ];
           };
           # elm-0.19.1 cannot be used to publish elm-geometry,
-          # because its artifact is very large.
-          # We workaround this using dev shell with elm-0.19.0
+          # because the generated `docs.json` is very large.
+          # We workaround this using a dev shell with elm-0.19.0
           # `nix develop .#publish`
           publish = pkgs.mkShell {
             buildInputs = [ elm0190.packages.${system}.default ];
