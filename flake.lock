@@ -1,6 +1,6 @@
 {
   "nodes": {
-    "elm": {
+    "elm0190": {
       "inputs": {
         "flake-utils": [
           "flake-utils"
@@ -11,11 +11,11 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-ZP9LXC4x01Liq8qZNUFPGMJWMb/YziBHbIaD8RJrF7I=",
-        "path": "/nix/store/j4djdn4pi1yp0il9laj8ma4699b7abv8-source/elm-0.19.0",
+        "path": "/nix/store/pkdpaycqxmg4dr860i385di1w6b41fj5-source/elm-0.19.0",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/j4djdn4pi1yp0il9laj8ma4699b7abv8-source/elm-0.19.0",
+        "path": "/nix/store/pkdpaycqxmg4dr860i385di1w6b41fj5-source/elm-0.19.0",
         "type": "path"
       }
     },
@@ -87,7 +87,7 @@
     },
     "root": {
       "inputs": {
-        "elm": "elm",
+        "elm0190": "elm0190",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
       }

@@ -2,11 +2,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
-    elm.url = "./elm-0.19.0";
-    elm.inputs.flake-utils.follows = "flake-utils";
+    elm0190.url = "./elm-0.19.0";
+    elm0190.inputs.flake-utils.follows = "flake-utils";
   };
 
-  outputs = { self, nixpkgs, elm, flake-utils }:
+  outputs = { self, nixpkgs, elm0190, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs.legacyPackages.${system};
       in {
@@ -19,7 +19,7 @@
             ];
           };
           publish = pkgs.mkShell {
-            buildInputs = [ elm.packages.${system}.default ];
+            buildInputs = [ elm0190.packages.${system}.default ];
           };
         };
       });
