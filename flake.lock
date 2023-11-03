@@ -1,26 +1,5 @@
 {
   "nodes": {
-    "elm0190": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "nixpkgs-elm0190": "nixpkgs-elm0190"
-      },
-      "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-DSdg7JYSJmxB7oYf83iSktLRT7+K1hc8gFJBhjmBUFU=",
-        "path": "/nix/store/7g2ix3cq020xd6i80w9h0ykj6i57lsr2-source/elm-0.19.0",
-        "type": "path"
-      },
-      "original": {
-        "path": "/nix/store/7g2ix3cq020xd6i80w9h0ykj6i57lsr2-source/elm-0.19.0",
-        "type": "path"
-      }
-    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -73,9 +52,9 @@
     },
     "root": {
       "inputs": {
-        "elm0190": "elm0190",
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-elm0190": "nixpkgs-elm0190"
       }
     },
     "systems": {
