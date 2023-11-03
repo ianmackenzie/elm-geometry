@@ -5,17 +5,19 @@
         "flake-utils": [
           "flake-utils"
         ],
-        "nixpkgs-elm0190": "nixpkgs-elm0190",
-        "nixpkgs-ghc865": "nixpkgs-ghc865"
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nixpkgs-elm0190": "nixpkgs-elm0190"
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-ZP9LXC4x01Liq8qZNUFPGMJWMb/YziBHbIaD8RJrF7I=",
-        "path": "/nix/store/pkdpaycqxmg4dr860i385di1w6b41fj5-source/elm-0.19.0",
+        "narHash": "sha256-DSdg7JYSJmxB7oYf83iSktLRT7+K1hc8gFJBhjmBUFU=",
+        "path": "/nix/store/7g2ix3cq020xd6i80w9h0ykj6i57lsr2-source/elm-0.19.0",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/pkdpaycqxmg4dr860i385di1w6b41fj5-source/elm-0.19.0",
+        "path": "/nix/store/7g2ix3cq020xd6i80w9h0ykj6i57lsr2-source/elm-0.19.0",
         "type": "path"
       }
     },
@@ -66,22 +68,6 @@
         "owner": "nixos",
         "repo": "nixpkgs",
         "rev": "22b0be560914b738e5342148caebd5c575b5a0b9",
-        "type": "github"
-      }
-    },
-    "nixpkgs-ghc865": {
-      "locked": {
-        "lastModified": 1615578822,
-        "narHash": "sha256-38Cf9fv+S2CAYxcKcyJ+o2v6HnounGhMWWyV1VUFMN0=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "795ef4f46f66c9ca6ab43929135f7ebb6170711b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "795ef4f46f66c9ca6ab43929135f7ebb6170711b",
         "type": "github"
       }
     },

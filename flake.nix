@@ -4,6 +4,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     elm0190.url = "./elm-0.19.0";
     elm0190.inputs.flake-utils.follows = "flake-utils";
+    elm0190.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, elm0190, flake-utils }:
