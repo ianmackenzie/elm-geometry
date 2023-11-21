@@ -10,6 +10,7 @@
       in {
         devShell = pkgs.mkShell {
           buildInputs = [
+            pkgs.gh
             pkgs.elmPackages.elm
             pkgs.elmPackages.elm-format
             pkgs.elmPackages.elm-test
