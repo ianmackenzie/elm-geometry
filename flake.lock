@@ -33,10 +33,28 @@
         "type": "github"
       }
     },
+    "nixpkgs-elm0190": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1571667155,
+        "narHash": "sha256-XegNnVm7Dk4dBpO7WGPyPF+JD2KYUtOcQXZDfh8T5mQ=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "22b0be560914b738e5342148caebd5c575b5a0b9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "22b0be560914b738e5342148caebd5c575b5a0b9",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-elm0190": "nixpkgs-elm0190"
       }
     },
     "systems": {
