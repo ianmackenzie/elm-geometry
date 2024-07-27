@@ -580,20 +580,20 @@ circumcenter p1 p2 p3 =
     in
     if a >= b then
         if a >= c then
-            circumenterHelp p1 p2 p3 a b c
+            circumcenterHelp p1 p2 p3 a b c
 
         else
-            circumenterHelp p3 p1 p2 c a b
+            circumcenterHelp p3 p1 p2 c a b
 
     else if b >= c then
-        circumenterHelp p2 p3 p1 b c a
+        circumcenterHelp p2 p3 p1 b c a
 
     else
-        circumenterHelp p3 p1 p2 c a b
+        circumcenterHelp p3 p1 p2 c a b
 
 
-circumenterHelp : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Float -> Float -> Float -> Maybe (Point2d units coordinates)
-circumenterHelp (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) a b c =
+circumcenterHelp : Point2d units coordinates -> Point2d units coordinates -> Point2d units coordinates -> Float -> Float -> Float -> Maybe (Point2d units coordinates)
+circumcenterHelp (Types.Point2d p1) (Types.Point2d p2) (Types.Point2d p3) a b c =
     let
         bc =
             b * c
